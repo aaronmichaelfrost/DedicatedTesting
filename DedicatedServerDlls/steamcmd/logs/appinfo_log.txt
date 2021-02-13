@@ -1,0 +1,17 @@
+
+
+[2021-02-09 20:55:18] RequestAppInfoUpdate: nNumAppIDs 1
+[2021-02-09 20:55:18] Change number 0->10697758, apps: 0/0, packages: 0/0
+[2021-02-09 20:55:18] Requesting 1 apps, 1 packages (meta data, 1024 prev attempts)
+[2021-02-09 20:55:18] Requesting 1 apps, 1 packages (full data, 1024 prev attempts)
+[2021-02-09 20:55:19] UpdatesJob: finished OK, apps updated 1 (3 KB), packages updated 1 (22 KB)
+[2021-02-09 20:55:19] Requesting 720 apps, 0 packages (meta data, 1024 prev attempts)
+[2021-02-09 20:55:19] Requested 76 app access tokens, 41 received, 35 denied
+[2021-02-09 20:55:19] Updated SHAs with 41 new access tokens
+[2021-02-09 20:55:20] Downloaded 70 apps via HTTP, 1566 KB (379 KB compressed)
+[2021-02-09 20:55:20] Requesting 650 apps, 0 packages (full data, 1024 prev attempts)
+[2021-02-09 20:55:24] UpdatesJob: finished OK, apps updated 720 (3549 KB), packages updated 0 (0 KB)
+[2021-02-09 20:55:24] RequestAppInfoUpdate: nNumAppIDs 1
+[2021-02-09 20:55:24] Requesting 1 apps, 0 packages (meta data, 1024 prev attempts)
+[2021-02-09 20:55:25] UpdatesJob: finished OK, apps updated 0 (0 KB), packages updated 0 (0 KB)
+[2021-02-09 20:55:39] Starting async write C:\Users\Aaron\Desktop\steamcmd/appcache/appinfo.vdf (2591181 bytes)

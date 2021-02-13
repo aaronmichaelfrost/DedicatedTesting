@@ -1,0 +1,32 @@
+"AppState"
+{
+	"appid"		"1007"
+	"Universe"		"1"
+	"LauncherPath"		"C:\\Users\\Aaron\\Desktop\\steamcmd\\steamcmd.exe"
+	"name"		"Steamworks SDK Redist"
+	"StateFlags"		"4"
+	"installdir"		"Steamworks SDK Redist"
+	"LastUpdated"		"1612932929"
+	"UpdateResult"		"0"
+	"SizeOnDisk"		"39546856"
+	"buildid"		"6052876"
+	"LastOwner"		"76561199430498616"
+	"BytesToDownload"		"11950416"
+	"BytesDownloaded"		"11950416"
+	"BytesToStage"		"39546856"
+	"BytesStaged"		"39546856"
+	"AutoUpdateBehavior"		"0"
+	"AllowOtherDownloadsWhileRunning"		"0"
+	"ScheduledAutoUpdate"		"0"
+	"InstalledDepots"
+	{
+		"1004"
+		{
+			"manifest"		"6473168357831043306"
+			"size"		"39546856"
+		}
+	}
+	"UserConfig"
+	{
+	}
+}

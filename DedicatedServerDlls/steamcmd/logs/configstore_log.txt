@@ -1,0 +1,11 @@
+
+
+[2021-02-09 20:55:13] Failed to read store 'install' from 'C:\Users\Aaron\Desktop\steamcmd\config\config.vdf.tmp'
+[2021-02-09 20:55:13] Failed to read store 'install' from 'C:\Users\Aaron\Desktop\steamcmd\config\config.vdf.tmp'
+[2021-02-09 20:55:13] Flushed store 'install' to 'C:\Users\Aaron\Desktop\steamcmd\config\config.vdf'
+[2021-02-09 20:55:17] Loaded store 'install' from 'C:\Users\Aaron\Desktop\steamcmd\config\config.vdf' successfully
+[2021-02-09 20:55:17] Flushed store 'install' to 'C:\Users\Aaron\Desktop\steamcmd\config\config.vdf'
+[2021-02-09 20:55:18] Failed to read store 'userlocal' from 'C:\Users\Aaron\Desktop\steamcmd\userdata\anonymous\config\localconfig.vdf.tmp'
+[2021-02-09 20:55:19] Flushed store 'install' to 'C:\Users\Aaron\Desktop\steamcmd\config\config.vdf'
+[2021-02-09 20:55:25] Flushed store 'install' to 'C:\Users\Aaron\Desktop\steamcmd\config\config.vdf'
+[2021-02-09 20:55:56] Flushed store 'install' to 'C:\Users\Aaron\Desktop\steamcmd\config\config.vdf'

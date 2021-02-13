@@ -1,0 +1,1 @@
+"SteamCmd.exe" +runscript ../sdk_win.txt

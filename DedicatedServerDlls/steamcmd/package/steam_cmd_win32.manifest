@@ -1,0 +1,57 @@
+"win32"
+{
+	"version"		"1612763065"
+	"steamcmd_public_all"
+	{
+		"file"		"steamcmd_public_all.zip.e61ce36efab3810390b5b5f55ee433f1fc7a04af"
+		"size"		"49303"
+		"sha2"		"74901c1f1b77aca874f3ecef4410223731cfe80e33f45f1d7e30abf5e0ef0ea0"
+	}
+	"steamcmd_bins_win32"
+	{
+		"file"		"steamcmd_bins_win32.zip.4e7907f7ccc4dde02a7787031b5441d9b2149727"
+		"size"		"8612064"
+		"sha2"		"b4a66e255a2566b8f77b64b3d563a50ca7981a7f672cd0116b691bb8b34b3d33"
+		"zipvz"		"steamcmd_bins_win32.zip.vz.4a247524370c3cbe690036c40e1943c467f54835_5516391"
+		"sha2vz"		"29e52caa04b910670d12a195ea9b7a0acedeee5e7885c686bede3c01bfbda0d3"
+	}
+	"steamcmd_steamservice_win32"
+	{
+		"file"		"steamcmd_steamservice_win32.zip.f1a9e9b120ec033b6f89acae2abe275cf4af74e2"
+		"size"		"2005703"
+		"sha2"		"2cb02de72acdf0e47da21194d8aa10a26c05b1c249ac91038b8ef750bd37aaa3"
+		"zipvz"		"steamcmd_steamservice_win32.zip.vz.811c8fbf2c405b20141106a9b01595c47f5e9cae_1161947"
+		"sha2vz"		"5355481959866c03dc1498cbc2ef20551561a5e28656a746319e8f67b96ab55e"
+	}
+	"steamcmd_steamerrorreporter_win32"
+	{
+		"file"		"steamcmd_steamerrorreporter_win32.zip.b434631ef12a40c27e2aed29a99ba58a55bf8cbc"
+		"size"		"178516"
+		"sha2"		"b446552c735a693d9b56f6f5af6903e80b2be53365d6b75c4527a021f2cd1775"
+	}
+	"steamcmd_siteserverui_win32"
+	{
+		"file"		"steamcmd_siteserverui_win32.zip.e8ef797bd3869eb9f5420746b2caf7cb3acebb0c"
+		"size"		"47865287"
+		"sha2"		"02ef49521c4d5e2f7fff8679129451b6e27b993ba43624510ceedf0c8685db05"
+		"zipvz"		"steamcmd_siteserverui_win32.zip.vz.6f2ca69732fc37b109f0693221800c83a885ad9b_33234818"
+		"sha2vz"		"9461a404709e52cc81555bd93cf376cd3c532df3a0dbc92b8e963b36faf65ff2"
+	}
+	"steamcmd_win32"
+	{
+		"file"		"steamcmd_win32.zip.4529d8788d35506dfb85cf8311f168ee24fa2cc8"
+		"size"		"1515962"
+		"sha2"		"bc17aa8d39902cbdf96741f0753f7fc39cd2815edd6254e760a4584d0308942f"
+		"zipvz"		"steamcmd_win32.zip.vz.66ef66f04f06d51b814310c21c4586bb93ea2172_1211463"
+		"sha2vz"		"18c561a0369542534981d316f356a40537bc37ae7bb3d63c11f58e6f4eab3e6b"
+		"IsBootstrapperPackage"		"1"
+	}
+}
+"kvsign2"
+{
+	"win32"		"3c13d678ddd9a377fddf741e2eb3be2f27621a5d3e6cbf774e4718aad5ffeaf526b990975ad1e5642428a61ff7b3100aca9afe2c30b633dac8afce29a62ae30c"
+}
+"kvsignatures"
+{
+	"win32"		"a9459862fd35e4ac1fc1738af079707d51098a421705ded92092914764cc000a681f9dcb3f90b397386ea3d27ac4982a7fe9292936f9142ce7d44adc0c82c1ee9bdbdc3ad58197b821010243e3abbecc9ddc19e6462196c598cddb77d0b57a0e447555539383f3bd7f7a898b72296bd464d020b6cbeebde848457162fd9da617"
+}
