@@ -8,19 +8,13 @@ using Steamworks;
 public class SteamManager : MonoBehaviour
 {
 
-    public static SteamManager Instance;
-
-    // Server listing UI
-    public GameObject serverListingPrefab;
-    public Transform serverListingSpawnPosition;
-
-
+    public static SteamManager singleton;
 
 
     private void Awake()
     {
-        if (Instance == null)
-            Instance = this;
+        if (singleton == null)
+            singleton = this;
         else
             Destroy(this.gameObject);
 
@@ -132,15 +126,11 @@ public class SteamManager : MonoBehaviour
     }
 
 
-
-
     async void RefreshServerList()
     {
-        // Clear the current list
-        foreach (Transform child in serverListingSpawnPosition.transform)
-        {
-            Destroy(child.gameObject);
-        }
+
+        UIManager.singleton.ClearServerList();
+
 
 
         // Add all servers from the local network to the list
@@ -149,9 +139,10 @@ public class SteamManager : MonoBehaviour
         {
             await list.RunQueryAsync();
 
+
             foreach (var server in list.Responsive)
             {
-                SpawnServerListing(server);
+                UIManager.singleton.AddServerListing(server);
 
                 Debug.Log($"Server found with address: {server.Address} name: {server.Name}");
             }
@@ -169,7 +160,7 @@ public class SteamManager : MonoBehaviour
 
             foreach (var server in list.Responsive)
             {
-                SpawnServerListing(server);
+                UIManager.singleton.AddServerListing(server);
 
                 Debug.Log($"Server found with address: {server.Address} name: {server.Name}");
             }
@@ -178,23 +169,6 @@ public class SteamManager : MonoBehaviour
             Debug.Log("Found " + list.Responsive.Count + " internet servers.");
         }
     }
-
-
-    void SpawnServerListing(Steamworks.Data.ServerInfo server)
-    {
-
-        // Spawn server listing
-        ServerListingUI s = Instantiate(serverListingPrefab, serverListingSpawnPosition).GetComponent<ServerListingUI>();
-
-        s.players.text = server.Players.ToString();
-        s.steamId.text = server.SteamId.ToString();
-        s.address.text = server.Address.ToString();
-        s.serverName.text = server.Name;
-    }
-
-
-
-
 
 
     private void OnGUI()
