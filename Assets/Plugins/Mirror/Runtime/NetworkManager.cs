@@ -6,6 +6,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
+
+
 namespace Mirror
 {
     /// <summary>
@@ -758,8 +760,11 @@ namespace Mirror
                     return false;
                 }
                 logger.Log("NetworkManager created singleton (DontDestroyOnLoad)");
+
+                
                 singleton = this;
-                if (Application.isPlaying) DontDestroyOnLoad(gameObject);
+                if (Application.isPlaying) 
+                    DontDestroyOnLoad(this.gameObject); ;
             }
             else
             {
@@ -772,6 +777,19 @@ namespace Mirror
             Transport.activeTransport = transport;
 
             return true;
+        }
+
+        public static void DontDestroyOnLoad(GameObject child)
+        {
+            Transform parentTransform = child.transform;
+
+            // If this object doesn't have a parent then its the root transform.
+            while (parentTransform.parent != null)
+            {
+                // Keep going up the chain.
+                parentTransform = parentTransform.parent;
+            }
+            GameObject.DontDestroyOnLoad(parentTransform.gameObject);
         }
 
         void RegisterServerMessages()

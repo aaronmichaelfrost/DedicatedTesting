@@ -8,6 +8,7 @@ public class ServerConsole : MonoBehaviour
 #if UNITY_SERVER
 
 
+	bool consoleStarted = false;
 
 	Windows.ConsoleWindow console = new Windows.ConsoleWindow();
 	Windows.ConsoleInput input = new Windows.ConsoleInput();
@@ -17,9 +18,11 @@ public class ServerConsole : MonoBehaviour
 	//
 	// Create console window, register callbacks
 	//
-	void Awake()
+	void Start()
 	{
-		DontDestroyOnLoad(gameObject);
+
+
+		Utilities.DontDestroyOnLoad(this.gameObject);
 
 		console.Initialize();
 		console.SetTitle("Dedicated Server Console");
@@ -29,6 +32,8 @@ public class ServerConsole : MonoBehaviour
 		Application.logMessageReceived += HandleLog;
 
 		Debug.Log("Console Started");
+
+		consoleStarted = true;
 	}
 
 	//
@@ -40,6 +45,8 @@ public class ServerConsole : MonoBehaviour
 
 		ConsoleSystem.Run(obj);
 
+		ClientConsole.singleton.input = obj;
+		ClientConsole.singleton.HandleInput();
 
 	}
 
@@ -48,21 +55,25 @@ public class ServerConsole : MonoBehaviour
 	//
 	void HandleLog(string message, string stackTrace, LogType type)
 	{
-		if (type == LogType.Warning)
-			System.Console.ForegroundColor = ConsoleColor.Yellow;
-		else if (type == LogType.Error)
-			System.Console.ForegroundColor = ConsoleColor.Red;
-		else
-			System.Console.ForegroundColor = ConsoleColor.White;
 
-		// We're half way through typing something, so clear this line ..
-		if (Console.CursorLeft != 0)
-			input.ClearLine();
+		if (consoleStarted)
+		{
+			if (type == LogType.Warning)
+				System.Console.ForegroundColor = ConsoleColor.Yellow;
+			else if (type == LogType.Error)
+				System.Console.ForegroundColor = ConsoleColor.Red;
+			else
+				System.Console.ForegroundColor = ConsoleColor.White;
 
-		// System.Console.WriteLine(message);
+			// We're half way through typing something, so clear this line ..
+			if (Console.CursorLeft != 0)
+				input.ClearLine();
 
-		// If we were typing something re-add it.
-		input.RedrawInputLine();
+			// System.Console.WriteLine(message);
+
+			// If we were typing something re-add it.
+			input.RedrawInputLine();
+		}
 	}
 
 	//
