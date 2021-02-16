@@ -15,6 +15,8 @@ public class SteamManager : MonoBehaviour
     public static SteamManager singleton;
 
 
+
+
     private void Awake()
     {
         if (singleton == null)
@@ -24,72 +26,26 @@ public class SteamManager : MonoBehaviour
 
 
         Utilities.DontDestroyOnLoad(this.gameObject);
+
+
 #if UNITY_SERVER
         StartDedicatedServer();
         SteamNetworking.OnP2PSessionRequest += OnP2PSessionRequestServer;
+
+        Mirror.NetworkServer.RegisterHandler<NetworkMessages.JoinRequest>(HandleJoinRequest, false);
 #else
         StartClient();
 
         SteamNetworking.OnP2PSessionRequest += OnP2PSessionRequestClient;
-        SteamUser.OnValidateAuthTicketResponse += OnClientValidateAuthTicketResponse;
         
 #endif
     }
 
 
-
-
-
-
-#if !UNITY_SERVER
-
-    private void OnClientValidateAuthTicketResponse(SteamId myid, SteamId ownerid, AuthResponse response)
+    void HandleJoinRequest(Mirror.NetworkConnection connection, NetworkMessages.JoinRequest request)
     {
-        switch (response)
-        {
-            case AuthResponse.OK:
-                // We were authenticated by the server
-                Mirror.NetworkManager.singleton.StartClient();
-
-                Debug.Log("[OnValidateAuthTicketResponse] Our auth ticket was validated!");
-                break;
-            case AuthResponse.UserNotConnectedToSteam:
-                Debug.LogWarning("[OnValidateAuthTicketResponse] Our auth ticket was invalid. Client not connected to steam.");
-                break;
-            case AuthResponse.NoLicenseOrExpired:
-                Debug.LogWarning("[OnValidateAuthTicketResponse] Our auth ticket was invalid. Game is not licensed or expired.");
-                break;
-            case AuthResponse.VACBanned:
-                Debug.LogWarning("[OnValidateAuthTicketResponse] Our auth ticket was invalid. Client is VAC banned.");
-                break;
-            case AuthResponse.LoggedInElseWhere:
-                Debug.LogWarning("[OnValidateAuthTicketResponse] Our auth ticket was invalid. Logged in elsewhere.");
-                break;
-            case AuthResponse.VACCheckTimedOut:
-                Debug.LogWarning("[OnValidateAuthTicketResponse] Our auth ticket was invalid. VAC check timed out.");
-                break;
-            case AuthResponse.AuthTicketCanceled:
-                Debug.LogWarning("[OnValidateAuthTicketResponse] Our auth ticket was invalid. Auth ticket was cancelled.");
-                break;
-            case AuthResponse.AuthTicketInvalidAlreadyUsed:
-                Debug.LogWarning("[OnValidateAuthTicketResponse] Our auth ticket was invalid. Auth ticket was already used.");
-                break;
-            case AuthResponse.AuthTicketInvalid:
-                Debug.LogWarning("[OnValidateAuthTicketResponse] Our auth ticket was invalid.");
-                break;
-            case AuthResponse.PublisherIssuedBan:
-                Debug.LogWarning("[OnValidateAuthTicketResponse] Our auth ticket was invalid. Client has a publisher issued ban.");
-                break;
-            default:
-                break;
-        }
-
-        SteamUser.EndAuthSession(SteamClient.SteamId);
-
+        Debug.Log("Handling join request from connection: ");
     }
-
-
-#endif
 
 
     /// <summary>
@@ -120,7 +76,7 @@ public class SteamManager : MonoBehaviour
 #if UNITY_SERVER
 
 
-#region Dedicated Server Logic
+    #region Dedicated Server Logic
 
     // Initialize server settings to their defaults
 
@@ -156,9 +112,6 @@ public class SteamManager : MonoBehaviour
             maxPlayers = Mathf.Clamp(System.Convert.ToUInt16(GetArg("-maxplayers")), 0, 1000);
 
 
-
-    
-
         SteamServerInit init = new SteamServerInit
         {
             IpAddress = System.Net.IPAddress.Any,
@@ -174,9 +127,6 @@ public class SteamManager : MonoBehaviour
 
 
         SteamServer.Init(1551700, init, true);
-
-
-
 
     }
 
@@ -221,25 +171,22 @@ public class SteamManager : MonoBehaviour
 
     void LogServerDetails()
     {
-        Debug.Log("[OnSteamServerConnected] server now is logged on and has a working connection to the Steam master server.");
-
+        Debug.Log(" server now is logged on and has a working connection to the Steam master server.");
 
 
         if (SteamServer.LoggedOn)
-            Debug.Log("[Aaron] Server is connected and registered with the Steam master server.");
+            Debug.Log("[OnSteamServerConnected] Server is connected and registered with the Steam master server.");
         else
-            Debug.Log("[Aaron] Steam server is not logged on and registered with steam master server.");
+            Debug.Log("[OnSteamServerConnected] Steam server is not logged on and registered with steam master server.");
 
 
         if (SteamServer.IsValid)
-            Debug.Log("[Aaron] Steam server is valid.");
+            Debug.Log("[OnSteamServerConnected] Steam server is valid.");
         else
-            Debug.Log("[Aaron] Steam server is not valid.");
+            Debug.Log("[OnSteamServerConnected] Steam server is not valid.");
 
 
-
-
-        Debug.Log("[Aaron] Server successfuly connected. Connect using Server IP: " + SteamServer.PublicIp);
+        Debug.Log("[OnSteamServerConnected] Server successfuly connected. Connect using Server IP: " + SteamServer.PublicIp);
     }
 
 
@@ -248,6 +195,8 @@ public class SteamManager : MonoBehaviour
         if(!IsBanned(id))
             SteamNetworking.AcceptP2PSessionWithUser(id);
     }
+
+
 
     private void Update()
     {
@@ -268,8 +217,6 @@ public class SteamManager : MonoBehaviour
 
                     SteamNetworking.SendP2PPacket(p.Value.SteamId, System.Text.Encoding.ASCII.GetBytes("join"), -1, 0, P2PSend.Reliable);
                 }
-
-                
             }
         }
     }
@@ -398,6 +345,41 @@ public class SteamManager : MonoBehaviour
     #region Client Logic
 
 
+    bool initialized = false;
+
+
+
+    /// <summary>
+    /// Returns a list of responsive server's server info when finished
+    /// </summary>
+    /// <returns></returns>
+    public async System.Threading.Tasks.Task<System.Collections.Generic.List<Steamworks.Data.ServerInfo>> ResponsiveServers()
+    {
+        var responsive = new System.Collections.Generic.List<Steamworks.Data.ServerInfo>();
+
+
+        using (var list = new Steamworks.ServerList.LocalNetwork())
+        {
+            await list.RunQueryAsync();
+
+            foreach (var server in list.Responsive)
+                responsive.Add(server);
+        }
+
+
+        using (var list = new Steamworks.ServerList.Internet())
+        {
+            await list.RunQueryAsync();
+
+            foreach (var server in list.Responsive)
+                responsive.Add(server);
+        }
+
+
+        return responsive;
+    }
+
+
     void StartClient()
     {
 
@@ -412,6 +394,8 @@ public class SteamManager : MonoBehaviour
         {
             SteamClient.Init(1551700, true);
             Debug.Log("Steam client initialized successfully.");
+
+            initialized = true;
 
             SceneManager.LoadScene(1);
         }
@@ -432,13 +416,52 @@ public class SteamManager : MonoBehaviour
         SteamNetworking.AcceptP2PSessionWithUser(id);
     }
 
+
+    private void Update()
+    {
+
+        if (initialized)
+        {
+            if (SteamNetworking.IsP2PPacketAvailable(0))
+            {
+                Steamworks.Data.P2Packet? p = SteamNetworking.ReadP2PPacket(0);
+
+                if (p.HasValue)
+                {
+                    string s = System.Text.Encoding.ASCII.GetString(p.Value.Data);
+
+                    Debug.Log("We got this message: " + s);
+
+                    if (s == "join")
+                    {
+
+                        Debug.Log("Server accepted join request! Joining now!");
+
+                        Mirror.NetworkManager.singleton.StartClient();
+                    }
+
+                    if (s == "kicked")
+                    {
+                        Debug.Log("Server kicked us!");
+
+                        Mirror.NetworkManager.singleton.StopClient();
+                    }
+
+
+                }
+            }
+        }
+    }
+
     private void OnDisable()
     {
         Mirror.NetworkManager.singleton.StopClient();
 
 
 #if !UNITY_EDITOR
-        SteamClient.Shutdown();
+
+        if(initialized)
+            SteamClient.Shutdown();
 #endif
     }
 
