@@ -157,7 +157,7 @@ public class ClientConsole : MonoBehaviour
         {
 
 #if UNITY_SERVER
-            SteamManager.singleton.Kick(x);
+            // SteamManager.singleton.Kick(x);
 #else
 
 

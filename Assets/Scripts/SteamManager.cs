@@ -30,22 +30,11 @@ public class SteamManager : MonoBehaviour
 
 #if UNITY_SERVER
         StartDedicatedServer();
-        SteamNetworking.OnP2PSessionRequest += OnP2PSessionRequestServer;
-
-        Mirror.NetworkServer.RegisterHandler<NetworkMessages.JoinRequest>(HandleJoinRequest, false);
 #else
         StartClient();
-
-        SteamNetworking.OnP2PSessionRequest += OnP2PSessionRequestClient;
-        
 #endif
     }
 
-
-    void HandleJoinRequest(Mirror.NetworkConnection connection, NetworkMessages.JoinRequest request)
-    {
-        Debug.Log("Handling join request from connection: ");
-    }
 
 
     /// <summary>
@@ -70,6 +59,12 @@ public class SteamManager : MonoBehaviour
             }
         }
         return null;
+    }
+
+
+    public bool IsBanned(Steamworks.SteamId id)
+    {
+        return false;
     }
 
 
@@ -157,8 +152,6 @@ public class SteamManager : MonoBehaviour
 
         SteamServer.Passworded = false;
 
-        
-        Mirror.NetworkManager.singleton.StartServer();
 
         Mirror.NetworkManager.singleton.maxConnections = SteamServer.MaxPlayers;
 
@@ -189,59 +182,6 @@ public class SteamManager : MonoBehaviour
         Debug.Log("[OnSteamServerConnected] Server successfuly connected. Connect using Server IP: " + SteamServer.PublicIp);
     }
 
-
-    private void OnP2PSessionRequestServer(SteamId id)
-    {
-        if(!IsBanned(id))
-            SteamNetworking.AcceptP2PSessionWithUser(id);
-    }
-
-
-
-    private void Update()
-    {
-        if (SteamNetworking.IsP2PPacketAvailable(0))
-        {
-            Steamworks.Data.P2Packet? p = SteamNetworking.ReadP2PPacket(0);
-
-            if (p.HasValue)
-            {
-                string s = System.Text.Encoding.ASCII.GetString(p.Value.Data);
-
-                if (s.Contains("join "))
-                {
-                    string name = s.Remove(0, 5);
-
-
-                    Debug.Log(name + " has joined the game! - " + p.Value.SteamId);
-
-                    SteamNetworking.SendP2PPacket(p.Value.SteamId, System.Text.Encoding.ASCII.GetBytes("join"), -1, 0, P2PSend.Reliable);
-                }
-            }
-        }
-    }
-
-
-    public void Kick(Steamworks.SteamId x)
-    {
-        // Send a message to the user to tell them they were kicked
-
-        Debug.Log("Kicking user with steam id: " + x);
-
-        SteamNetworking.SendP2PPacket(x, System.Text.Encoding.ASCII.GetBytes("kicked"), -1, 0, P2PSend.Reliable);
-
-
-        SteamServer.EndSession(x);
-
-
-    }
-
-
-    public bool IsBanned(Steamworks.SteamId id)
-    {
-
-        return false;
-    }
 
     /// <summary>
     /// Returns true if user's steamid is on the server's moderator list
@@ -410,48 +350,10 @@ public class SteamManager : MonoBehaviour
         }
     }
 
-    private void OnP2PSessionRequestClient(SteamId id)
-    {
-        
-        SteamNetworking.AcceptP2PSessionWithUser(id);
-    }
 
 
-    private void Update()
-    {
-
-        if (initialized)
-        {
-            if (SteamNetworking.IsP2PPacketAvailable(0))
-            {
-                Steamworks.Data.P2Packet? p = SteamNetworking.ReadP2PPacket(0);
-
-                if (p.HasValue)
-                {
-                    string s = System.Text.Encoding.ASCII.GetString(p.Value.Data);
-
-                    Debug.Log("We got this message: " + s);
-
-                    if (s == "join")
-                    {
-
-                        Debug.Log("Server accepted join request! Joining now!");
-
-                        Mirror.NetworkManager.singleton.StartClient();
-                    }
-
-                    if (s == "kicked")
-                    {
-                        Debug.Log("Server kicked us!");
-
-                        Mirror.NetworkManager.singleton.StopClient();
-                    }
 
 
-                }
-            }
-        }
-    }
 
     private void OnDisable()
     {

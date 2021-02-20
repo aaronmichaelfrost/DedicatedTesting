@@ -177,6 +177,7 @@ GameObject:
   - component: {fileID: 2097491645}
   - component: {fileID: 2097491644}
   - component: {fileID: 2097491643}
+  - component: {fileID: 2097491646}
   m_Layer: 0
   m_Name: Mirror
   m_TagString: Untagged
@@ -230,11 +231,11 @@ MonoBehaviour:
   transport: {fileID: 2097491643}
   networkAddress: localhost
   maxConnections: 4
-  disconnectInactiveConnections: 0
-  disconnectInactiveTimeout: 60
-  authenticator: {fileID: 0}
+  disconnectInactiveConnections: 1
+  disconnectInactiveTimeout: 6000
+  authenticator: {fileID: 2097491646}
   playerPrefab: {fileID: 807885625671965236, guid: 10f25777a39cb5c4c9b0917ad3768b21, type: 3}
-  autoCreatePlayer: 1
+  autoCreatePlayer: 0
   playerSpawnMethod: 0
   spawnPrefabs: []
 --- !u!4 &2097491645
@@ -251,3 +252,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2097491646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2097491642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f78ddce6853f4fb499d94662484b5fd6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnServerAuthenticated:
+    m_PersistentCalls:
+      m_Calls: []
+  OnClientAuthenticated:
+    m_PersistentCalls:
+      m_Calls: []

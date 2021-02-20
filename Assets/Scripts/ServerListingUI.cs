@@ -1,4 +1,7 @@
-﻿using TMPro;
+﻿#if !UNITY_SERVER
+
+
+using TMPro;
 using UnityEngine;
 
 public class ServerListingUI : MonoBehaviour
@@ -16,6 +19,11 @@ public class ServerListingUI : MonoBehaviour
     public void Connect()
     {
 
+
+
+        Mirror.NetworkManager.singleton.StartClient();
+
+        Mirror.NetworkManager.singleton.networkAddress = server.Address.ToString();
     }
 
 
@@ -53,3 +61,6 @@ public class ServerListingUI : MonoBehaviour
         serverName.text = server.Name;
     }
 }
+
+
+#endif
