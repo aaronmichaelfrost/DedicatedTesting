@@ -161,6 +161,13 @@ public class NetworkManagerCallbacks : NetworkManager
     /// <param name="conn">Connection from client.</param>
     public override void OnServerDisconnect(NetworkConnection conn)
     {
+
+        MyAuthenticator.PlayerData p = (MyAuthenticator.PlayerData)conn.authenticationData;
+
+        Steamworks.SteamServer.EndSession(p.id);
+
+        Debug.Log(p.steamName + " has left the game.");
+
         base.OnServerDisconnect(conn);
     }
 
@@ -182,6 +189,10 @@ public class NetworkManagerCallbacks : NetworkManager
     /// <param name="conn">Connection to the server.</param>
     public override void OnClientConnect(NetworkConnection conn)
     {
+        MyAuthenticator.PlayerData p = (MyAuthenticator.PlayerData)conn.authenticationData;
+
+        Debug.Log(p.steamName + " has joined the game.");
+
         base.OnClientConnect(conn);
     }
 
@@ -192,6 +203,7 @@ public class NetworkManagerCallbacks : NetworkManager
     /// <param name="conn">Connection to the server.</param>
     public override void OnClientDisconnect(NetworkConnection conn)
     {
+
         base.OnClientDisconnect(conn);
     }
 

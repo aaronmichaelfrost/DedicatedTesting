@@ -68,10 +68,14 @@ public class SteamManager : MonoBehaviour
     }
 
 
+
 #if UNITY_SERVER
 
 
     #region Dedicated Server Logic
+
+
+
 
     // Initialize server settings to their defaults
 
@@ -159,6 +163,10 @@ public class SteamManager : MonoBehaviour
 
 
         SceneManager.LoadScene(1);
+
+        Mirror.NetworkManager.singleton.StartServer();
+
+        Mirror.NetworkManager.singleton.ServerChangeScene("gameplay");
     }
 
 
@@ -355,16 +363,25 @@ public class SteamManager : MonoBehaviour
 
 
 
+
+
+
     private void OnDisable()
     {
+
+
+        if(Mirror.NetworkClient.isConnected)
+            Mirror.NetworkClient.Disconnect();
+
         Mirror.NetworkManager.singleton.StopClient();
 
 
 #if !UNITY_EDITOR
-
-        if(initialized)
+        if (initialized)
             SteamClient.Shutdown();
 #endif
+
+
     }
 
 

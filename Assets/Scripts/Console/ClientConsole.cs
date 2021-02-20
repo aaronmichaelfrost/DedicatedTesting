@@ -36,10 +36,8 @@ public class ClientConsole : MonoBehaviour
 
     void Start()
     {
-
 #if UNITY_SERVER
         gameObject.AddComponent(typeof(ServerConsole));
-        Debug.Log("1");
 #endif
     }
 

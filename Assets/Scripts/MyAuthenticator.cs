@@ -44,13 +44,7 @@ public class MyAuthenticator : NetworkAuthenticator
     }
 
 
-    public struct PlayerData
-    {
-        public Steamworks.SteamId id;
-        public string steamName;
 
-        // Other stuff like character selection etc
-    }
 
 
     private void ClientAuthMessageHandler(NetworkConnection connection, AuthRequest authMessage)
@@ -284,4 +278,14 @@ public class MyAuthenticator : NetworkAuthenticator
     {
         // Do nothing. The message handler callback will handle authrequests.
     }
+}
+
+
+[System.Serializable]
+public struct PlayerData
+{
+    public Steamworks.SteamId id;
+    public string steamName;
+
+    // Other stuff like character selection etc
 }
