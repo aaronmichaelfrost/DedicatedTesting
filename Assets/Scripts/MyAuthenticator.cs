@@ -111,6 +111,8 @@ public class MyAuthenticator : NetworkAuthenticator
                 playerData = authMessage.playerData
             };
 
+            
+
             currentAuthUnits.Add(u);
 
             // Ask steam to validate the user
@@ -274,6 +276,8 @@ public class MyAuthenticator : NetworkAuthenticator
                 id = Steamworks.SteamClient.SteamId
             }
         };
+
+      
 
         NetworkClient.Send(authRequest, 0);
     }
