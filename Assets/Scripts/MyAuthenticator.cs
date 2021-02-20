@@ -44,8 +44,8 @@ public class MyAuthenticator : NetworkAuthenticator
         // This message you give the reason they could /  couldnt be authenticated
         public string message;
 
+        public Steamworks.AuthTicket ticket;
 
-        
     }
 
 
@@ -55,13 +55,29 @@ public class MyAuthenticator : NetworkAuthenticator
         AuthResponse msg = new AuthResponse
         {
             message = "Kicked",
-            accepted = false
+            accepted = false,
+            
+
         };
 
         foreach (var connection in NetworkServer.connections)
         {
             if(((PlayerData)connection.Value.authenticationData).id == id)
             {
+                //msg.ticket = ((PlayerData)connection.Value.authenticationData).ticket;
+
+
+
+                if(((PlayerData)connection.Value.authenticationData).ticket != null)
+                {
+                    // Cancel the ticket
+                    ((PlayerData)connection.Value.authenticationData).ticket.Cancel();
+                }
+                else
+                {
+                    Debug.Log("Auth ticket is null. Cannot cancel it.");
+                }
+
 
                 // disconnect the client after 1 second so that response message gets delivered
                 connection.Value.Disconnect();
@@ -92,7 +108,8 @@ public class MyAuthenticator : NetworkAuthenticator
             AuthResponse response = new AuthResponse
             {
                 message = "Server banned!",
-                accepted = false
+                accepted = false,
+                ticket = authMessage.ticket
             };
 
             FailAuthentication(connection, response);
@@ -241,6 +258,7 @@ public class MyAuthenticator : NetworkAuthenticator
     {
         Debug.Log("Authentication failed. Sending result to client.");
 
+
         conn.Send(response, 0);
 
         // must set NetworkConnection isAuthenticated = false
@@ -273,9 +291,13 @@ public class MyAuthenticator : NetworkAuthenticator
             playerData = new PlayerData
             {
                 steamName = Steamworks.SteamClient.Name,
-                id = Steamworks.SteamClient.SteamId
+                id = Steamworks.SteamClient.SteamId,
             }
+
+            
         };
+
+        authRequest.playerData.ticket = authRequest.ticket;
 
       
 
@@ -327,6 +349,8 @@ public struct PlayerData
 {
     public Steamworks.SteamId id;
     public string steamName;
+
+    public Steamworks.AuthTicket ticket;
 
     // Other stuff like character selection etc
 }

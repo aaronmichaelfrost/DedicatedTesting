@@ -88,6 +88,8 @@ namespace Mirror
 
         protected void ClientReject(NetworkConnection conn)
         {
+            Debug.Log("Client reject called, disconnecting.");
+
             // Set this on the client for local reference
             conn.isAuthenticated = false;
 

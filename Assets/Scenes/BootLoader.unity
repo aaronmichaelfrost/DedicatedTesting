@@ -222,7 +222,7 @@ MonoBehaviour:
   dontDestroyOnLoad: 1
   runInBackground: 1
   autoStartServerBuild: 0
-  showDebugMessages: 1
+  showDebugMessages: 0
   serverTickRate: 60
   serverBatching: 0
   serverBatchInterval: 0

@@ -35,11 +35,11 @@ public class ServerData
 
         // Create config / data files if neccecary
 
-        playersPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\" + playersPath;
+        playersPath = Application.dataPath + "\\" + playersPath;
 
-        modsPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\" + modsPath;
+        modsPath = Application.dataPath + "\\" + modsPath;
 
-        bansPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\" + bansPath;
+        bansPath = Application.dataPath + "\\" + bansPath;
 
 
         if (!File.Exists(playersPath))
