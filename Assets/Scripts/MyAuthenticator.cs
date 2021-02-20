@@ -29,6 +29,8 @@ public class MyAuthenticator : NetworkAuthenticator
     {
         public Steamworks.AuthTicket ticket;
         public PlayerData playerData;
+
+        
     }
 
 
@@ -41,6 +43,9 @@ public class MyAuthenticator : NetworkAuthenticator
 
         // This message you give the reason they could /  couldnt be authenticated
         public string message;
+
+
+        
     }
 
 
