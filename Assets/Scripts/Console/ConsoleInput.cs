@@ -22,7 +22,7 @@ namespace Windows
 
 		public void RedrawInputLine()
 		{
-			if ( inputString.Length == 0 ) return;
+			if (inputString == null || inputString.Length == 0 ) return;
 
 			if ( Console.CursorLeft > 0 )
 				ClearLine();

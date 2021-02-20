@@ -19,11 +19,10 @@ public class ServerListingUI : MonoBehaviour
     public void Connect()
     {
 
-
-
         Mirror.NetworkManager.singleton.StartClient();
 
         Mirror.NetworkManager.singleton.networkAddress = server.Address.ToString();
+
     }
 
 
@@ -46,9 +45,9 @@ public class ServerListingUI : MonoBehaviour
     /// </summary>
     public static void Clear()
     {
-
+        
         foreach (Transform child in MainMenu.singleton.serverListingParent)
-            if(child.gameObject) Destroy(child.gameObject);
+            if(child != null && child.gameObject) Destroy(child.gameObject);
     }
 
 

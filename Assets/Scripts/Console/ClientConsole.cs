@@ -27,11 +27,17 @@ public class ClientConsole : MonoBehaviour
     public static ConsoleCommand<float> SET_FOV;
     public static ConsoleCommand<string> SERVER_DEBUG_MESSAGE;
     public static ConsoleCommand<string> BAN_BY_NAME;
-    public static ConsoleCommand<int> BAN_BY_ID;
-    public static ConsoleCommand<int> MOD_BY_ID;
+    public static ConsoleCommand<ulong> BAN_BY_ID;
+    public static ConsoleCommand<ulong> MOD_BY_ID;
     public static ConsoleCommand<string> MOD_BY_NAME;
 
+    public static ConsoleCommand<string> UNBAN_BY_NAME;
+    public static ConsoleCommand<ulong> UNBAN_BY_ID;
+    public static ConsoleCommand<ulong> UNMOD_BY_ID;
+    public static ConsoleCommand<string> UNMOD_BY_NAME;
+
     public static ConsoleCommand<ulong> KICK_BY_ID;
+    public static ConsoleCommand<string> KICK_BY_NAME;
 
 
     void Start()
@@ -48,7 +54,7 @@ public class ClientConsole : MonoBehaviour
         if (singleton == null)
             singleton = this;
         else
-            Destroy(this);
+            Destroy(this.gameObject);
 
 
         Utilities.DontDestroyOnLoad(this.gameObject);
@@ -85,11 +91,12 @@ public class ClientConsole : MonoBehaviour
         });
 
 
-        BAN_BY_ID = new ConsoleCommand<int>("ban_id", "Bans the user with the given steam id", "ban_id <int>", (x) =>
+        BAN_BY_ID = new ConsoleCommand<ulong>("ban_id", "Bans the user with the given steam id", "ban_id <ulong>", (x) =>
         {
 
 #if UNITY_SERVER
-            SteamManager.singleton.Ban(System.Convert.ToUInt64(x));
+            ServerData.Config.AddId(x, ServerData.bansPath);
+            KICK_BY_ID.Invoke(x);
 #else
             // Ask server to ban this player
             Debug.Log("Asking server to ban player with id: " + x);
@@ -103,13 +110,19 @@ public class ClientConsole : MonoBehaviour
         {
 
 #if UNITY_SERVER
-            SteamManager.singleton.Ban(x);
+
+            ulong id = ServerData.Players.GetId(x);
+
+            if (id != 0)
+            {
+                ServerData.Config.AddId(id, ServerData.bansPath);
+                KICK_BY_ID.Invoke(id);
+            }
+                
+
+            
 #else
 
-            if (Mirror.NetworkClient.active)
-            {
-
-            }
             // Ask server to ban this player
             Debug.Log("Asking server to ban player with name: " + x);
 
@@ -119,12 +132,12 @@ public class ClientConsole : MonoBehaviour
         });
 
 
-        MOD_BY_ID = new ConsoleCommand<int>("mod_id", "Adds a server moderator by steamid.", "mod_id <int>", (x) =>
+        MOD_BY_ID = new ConsoleCommand<ulong>("mod_id", "Adds a server moderator by steamid.", "mod_id <ulong>", (x) =>
         {
 
 #if UNITY_SERVER
+            ServerData.Config.AddId(x, ServerData.modsPath);
 
-            SteamManager.singleton.AddMod(System.Convert.ToUInt64(x));
 #else
             // Ask server to ban this player
             Debug.Log("Asking server to mod player with id: " + x);
@@ -138,11 +151,15 @@ public class ClientConsole : MonoBehaviour
         {
 
 #if UNITY_SERVER
-            SteamManager.singleton.AddMod(x);
+
+            ulong id = ServerData.Players.GetId(x);
+
+            if (id != 0)
+                ServerData.Config.AddId(id, ServerData.modsPath);
 #else
 
 
-            // Ask server to ban this player
+            // Ask server to mod this player
             Debug.Log("Asking server to mod player with name: " + x);
 
 #endif
@@ -151,11 +168,102 @@ public class ClientConsole : MonoBehaviour
         });
 
 
-        KICK_BY_ID = new ConsoleCommand<ulong>("kick_id", "Kicks the player from the session", "kick <int>", (x) =>
+        UNBAN_BY_ID = new ConsoleCommand<ulong>("unban_id", "UnBans the user with the given steam id", "unban_id <ulong>", (x) =>
         {
 
 #if UNITY_SERVER
-            // SteamManager.singleton.Kick(x);
+            ServerData.Config.RemoveId(x, ServerData.bansPath);
+#else
+            // Ask server to ban this player
+            Debug.Log("Asking server to unban player with id: " + x);
+
+#endif
+
+
+        });
+
+        UNBAN_BY_NAME = new ConsoleCommand<string>("unban_name", "UnBans the first found user with this steam name, be careful using this.", "unban_name <string>", (x) =>
+        {
+
+#if UNITY_SERVER
+
+            ulong id = ServerData.Players.GetId(x);
+
+            if (id != 0)
+                ServerData.Config.RemoveId(id, ServerData.bansPath);
+#else
+
+            // Ask server to ban this player
+            Debug.Log("Asking server to unban player with name: " + x);
+
+#endif
+
+
+        });
+
+
+        UNMOD_BY_ID = new ConsoleCommand<ulong>("unmod_id", "Removes a server moderator by steamid.", "unmod_id <int>", (x) =>
+        {
+
+#if UNITY_SERVER
+            ServerData.Config.RemoveId(x, ServerData.modsPath);
+
+#else
+            // Ask server to ban this player
+            Debug.Log("Asking server to unmod player with id: " + x);
+
+#endif
+
+
+        });
+
+        UNMOD_BY_NAME = new ConsoleCommand<string>("unmod_name", "Removes a server moderator using the first found user with this steam name, be careful using this.", "unmod_name <string>", (x) =>
+        {
+
+#if UNITY_SERVER
+
+            ulong id = ServerData.Players.GetId(x);
+
+            if (id != 0)
+                ServerData.Config.RemoveId(id, ServerData.modsPath);
+#else
+
+
+            // Ask server to mod this player
+            Debug.Log("Asking server to unmod player with name: " + x);
+
+#endif
+
+
+        });
+
+
+        KICK_BY_ID = new ConsoleCommand<ulong>("kick_id", "Kicks the player from the session", "kick <ulong>", (x) =>
+        {
+
+#if UNITY_SERVER
+            if(ServerData.Players.IdPresent(x))
+                ((MyAuthenticator)Mirror.NetworkManager.singleton.authenticator).Kick(x);
+#else
+
+
+            // Ask server to ban this player
+            Debug.Log("Asking server to kick player with id: " + x);
+
+#endif
+
+
+        });
+
+
+        KICK_BY_NAME = new ConsoleCommand<string>("kick_name", "Kicks the player from the session", "kick <string>", (x) =>
+        {
+
+#if UNITY_SERVER
+            ulong id = ServerData.Players.GetId(x);
+
+            if(id != 0)
+                ((MyAuthenticator)Mirror.NetworkManager.singleton.authenticator).Kick(id);
 #else
 
 
@@ -177,31 +285,6 @@ public class ClientConsole : MonoBehaviour
         });
 
 
-
-        /*      here is an example moderator / server only command
-         *      
-         *      
-        *         BAN = new ConsoleCommand<int>("ban", "Adds steamid to ban list.", "ban steamid", (x) =>
-                {
-
-                    // Ask server to ban a player
-                    // Server checks to make sure we are a moderator
-                    // Server adds steamid to bans.cfg
-                       
-
-
-                });
-        * 
-        * 
-        * 
-        * 
-        * 
-        * 
-        * 
-        * 
-        * 
-        * 
-        */
 
 
 
@@ -233,6 +316,11 @@ public class ClientConsole : MonoBehaviour
             MOD_BY_ID,
             MOD_BY_NAME,
             KICK_BY_ID,
+            KICK_BY_NAME,
+            UNBAN_BY_ID,
+            UNMOD_BY_ID,
+            UNBAN_BY_NAME,
+            UNMOD_BY_NAME,
 
 
 
@@ -253,7 +341,7 @@ public class ClientConsole : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.F1))
         {
-            ToggleDebug();
+            ToggleConsole();
         }
 
 
@@ -265,7 +353,7 @@ public class ClientConsole : MonoBehaviour
     }
 
 
-    void ToggleDebug()
+    void ToggleConsole()
     {
         showConsole = !showConsole;
     }
@@ -352,6 +440,12 @@ public class ClientConsole : MonoBehaviour
                 {
                     (commandList[i] as ConsoleCommand).Invoke();
                 }
+                else if (commandList[i] as ConsoleCommand<ulong> != null)
+                {
+                    ulong x;
+                    if (ulong.TryParse(properties[1], out x))
+                        (commandList[i] as ConsoleCommand<ulong>).Invoke(x);
+                }
                 else if (commandList[i] as ConsoleCommand<int> != null)
                 {
                     int x;
@@ -364,12 +458,7 @@ public class ClientConsole : MonoBehaviour
                     if (float.TryParse(properties[1], out x))
                         (commandList[i] as ConsoleCommand<float>).Invoke(x);
                 }
-                else if (commandList[i] as ConsoleCommand<ulong> != null)
-                {
-                    ulong x;
-                    if (ulong.TryParse(properties[1], out x))
-                        (commandList[i] as ConsoleCommand<ulong>).Invoke(x);
-                }
+
                 else if (commandList[i] as ConsoleCommand<string> != null)
                 {
                     (commandList[i] as ConsoleCommand<string>).Invoke(properties[1]);

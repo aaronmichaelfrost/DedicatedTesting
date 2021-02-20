@@ -222,7 +222,7 @@ MonoBehaviour:
   dontDestroyOnLoad: 1
   runInBackground: 1
   autoStartServerBuild: 0
-  showDebugMessages: 0
+  showDebugMessages: 1
   serverTickRate: 60
   serverBatching: 0
   serverBatchInterval: 0
@@ -235,7 +235,7 @@ MonoBehaviour:
   disconnectInactiveTimeout: 6000
   authenticator: {fileID: 2097491646}
   playerPrefab: {fileID: 807885625671965236, guid: 10f25777a39cb5c4c9b0917ad3768b21, type: 3}
-  autoCreatePlayer: 0
+  autoCreatePlayer: 1
   playerSpawnMethod: 0
   spawnPrefabs: []
 --- !u!4 &2097491645

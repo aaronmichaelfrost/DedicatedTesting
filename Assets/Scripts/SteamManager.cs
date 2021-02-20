@@ -29,7 +29,9 @@ public class SteamManager : MonoBehaviour
 
 
 #if UNITY_SERVER
+        
         StartDedicatedServer();
+        ServerData.Init();
 #else
         StartClient();
 #endif
@@ -59,12 +61,6 @@ public class SteamManager : MonoBehaviour
             }
         }
         return null;
-    }
-
-
-    public bool IsBanned(Steamworks.SteamId id)
-    {
-        return false;
     }
 
 
@@ -190,98 +186,6 @@ public class SteamManager : MonoBehaviour
         Debug.Log("[OnSteamServerConnected] Server successfuly connected. Connect using Server IP: " + SteamServer.PublicIp);
     }
 
-
-    /// <summary>
-    /// Returns true if user's steamid is on the server's moderator list
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    public bool IsModerator(Steamworks.SteamId id)
-    {
-        return false;
-    }
-
-
-
-    /// <summary>
-    /// Add a moderator to moderators.cfg
-    /// </summary>
-    public void AddMod(Steamworks.SteamId id)
-    {
-
-    }
-
-
-    /// <summary>
-    /// Remove a moderator to moderators.cfg
-    /// </summary>
-    public void RemoveMod(Steamworks.SteamId id)
-    {
-
-    }
-
-
-    /// <summary>
-    /// Add a moderator from moderators.cfg
-    /// </summary>
-    public void AddMod(string name)
-    {
-
-    }
-
-
-    /// <summary>
-    /// Remove a moderator from moderators.cfg
-    /// </summary>
-    public void RemoveMod(string name)
-    {
-
-    }
-
-    /// <summary>
-    /// Adds the steamid to bans.cfg
-    /// </summary>
-    /// <param name="id"></param>
-    public void Ban(Steamworks.SteamId id)
-    {
-        // Write the id as an entry to bans.cfg
-
-    }
-
-    /// <summary>
-    /// Adds the player's id to bans.cfg
-    /// </summary>
-    /// <param name="name"></param>
-    public void Ban(string steamName)
-    {
-        // Find id of player with that steam name
-        // then call the Ban(id)
-
-    }
-
-    /// <summary>
-    /// Removes the steamid from bans.cfg
-    /// </summary>
-    /// <param name="id"></param>
-    public void UnBan(Steamworks.SteamId id)
-    {
-        // Delete id from banscfg
-
-
-    }
-
-
-    /// <summary>
-    /// Removes the associated steamid from bans.cfg
-    /// </summary>
-    /// <param name="steamName"></param>
-    public void UnBan(string steamName)
-    {
-        // Find id of player with that steam name
-        // then remove that id from bans.cfg
-
-
-    }
 
 
     #endregion

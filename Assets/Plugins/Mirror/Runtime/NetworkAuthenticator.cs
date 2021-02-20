@@ -81,7 +81,7 @@ namespace Mirror
         /// <param name="conn">Connection of the client.</param>
         public abstract void OnClientAuthenticate(NetworkConnection conn);
 
-        protected void ClientAccept(NetworkConnection conn)
+        public void ClientAccept(NetworkConnection conn)
         {
             OnClientAuthenticated.Invoke(conn);
         }

@@ -45,6 +45,28 @@ public class MyAuthenticator : NetworkAuthenticator
 
 
 
+    public void Kick(Steamworks.SteamId id)
+    {
+        AuthResponse msg = new AuthResponse
+        {
+            message = "Kicked",
+            accepted = false
+        };
+
+        foreach (var connection in NetworkServer.connections)
+        {
+            if(((PlayerData)connection.Value.authenticationData).id == id)
+            {
+
+                // disconnect the client after 1 second so that response message gets delivered
+                connection.Value.Disconnect();
+
+                return;
+            }
+        }
+    }
+
+
 
 
     private void ClientAuthMessageHandler(NetworkConnection connection, AuthRequest authMessage)
@@ -52,21 +74,29 @@ public class MyAuthenticator : NetworkAuthenticator
         Debug.Log("Client wants to be authenticated: " + authMessage.playerData.steamName + " - " + authMessage.playerData.id);
 
 
-        Debug.Log("Checking for server ban: ");
+        Debug.Log("Checking for server ban from the path " + ServerData.bansPath);
 
-        if (SteamManager.singleton.IsBanned(authMessage.playerData.id))
+        connection.authenticationData = authMessage.playerData;
+
+
+
+        if (ServerData.Config.IdPresent(authMessage.playerData.id, ServerData.bansPath))
         {
+            Debug.Log("Player is banned. Kicking them.");
+
             AuthResponse response = new AuthResponse
             {
                 message = "Server banned!",
                 accepted = false
             };
 
-            connection.Send(response, 0);
+            FailAuthentication(connection, response);
         }
         else
         {
-            Debug.Log("Authenticating with steam.");
+            Debug.Log("They aren't server banned.");
+
+            Debug.Log("Authenticating with steam...");
 
 
             // Keep track of this client's information temporarily so we can trace back to the connection using the steam id returned in the validate callback
@@ -172,15 +202,11 @@ public class MyAuthenticator : NetworkAuthenticator
         {
             if(userId == authUnit.playerData.id)
             {
-                Debug.Log("Sending response to client...");
-
 
                 if (accepted)
-                    ApproveAuthentication(authUnit);
+                    ApproveAuthentication(authUnit.connection,  msg);
                 else
                     FailAuthentication(authUnit.connection, msg);
-
-                authUnit.connection.Send(msg, 0);
 
 
                 // Remove auth unit from temporary list
@@ -191,20 +217,24 @@ public class MyAuthenticator : NetworkAuthenticator
     }
 
 
-    private void ApproveAuthentication(AuthUnit authUnit)
+    private void ApproveAuthentication(NetworkConnection conn, AuthResponse response)
     {
-        // Set the authentication data like steam name etc
-        authUnit.connection.authenticationData = authUnit.playerData;
+        Debug.Log("Authentication approved. Sending result to client.");
 
-        ServerAccept(authUnit.connection);
+        conn.Send(response, 0);
+
+        conn.isAuthenticated = true;
+
+        ServerAccept(conn);
     }
 
 
 
     private void FailAuthentication(NetworkConnection conn, AuthResponse response)
     {
-        conn.Send(response, 0);
+        Debug.Log("Authentication failed. Sending result to client.");
 
+        conn.Send(response, 0);
 
         // must set NetworkConnection isAuthenticated = false
         conn.isAuthenticated = false;
@@ -226,6 +256,8 @@ public class MyAuthenticator : NetworkAuthenticator
     // Called on client when we try to connect to the mirror server
     public override void OnClientAuthenticate(NetworkConnection conn)
     {
+
+        Debug.Log("Sending auth request to server.");
 
         AuthRequest authRequest = new AuthRequest
         {

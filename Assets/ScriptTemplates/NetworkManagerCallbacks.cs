@@ -132,7 +132,13 @@ public class NetworkManagerCallbacks : NetworkManager
     /// <para>Unity calls this on the Server when a Client connects to the Server. Use an override to tell the NetworkManager what to do when a client connects to the server.</para>
     /// </summary>
     /// <param name="conn">Connection from client.</param>
-    public override void OnServerConnect(NetworkConnection conn) { }
+    public override void OnServerConnect(NetworkConnection conn) {
+
+        Debug.Log(((PlayerData)conn.authenticationData).steamName + " has joined the game!");
+
+        ServerData.Players.AddPlayer((PlayerData)conn.authenticationData);
+
+    }
 
     /// <summary>
     /// Called on the server when a client is ready.
@@ -162,7 +168,7 @@ public class NetworkManagerCallbacks : NetworkManager
     public override void OnServerDisconnect(NetworkConnection conn)
     {
 
-        MyAuthenticator.PlayerData p = (MyAuthenticator.PlayerData)conn.authenticationData;
+        PlayerData p = (PlayerData)conn.authenticationData;
 
         Steamworks.SteamServer.EndSession(p.id);
 
@@ -189,9 +195,7 @@ public class NetworkManagerCallbacks : NetworkManager
     /// <param name="conn">Connection to the server.</param>
     public override void OnClientConnect(NetworkConnection conn)
     {
-        MyAuthenticator.PlayerData p = (MyAuthenticator.PlayerData)conn.authenticationData;
-
-        Debug.Log(p.steamName + " has joined the game.");
+        Debug.Log("We connected to the server.");
 
         base.OnClientConnect(conn);
     }
@@ -203,7 +207,11 @@ public class NetworkManagerCallbacks : NetworkManager
     /// <param name="conn">Connection to the server.</param>
     public override void OnClientDisconnect(NetworkConnection conn)
     {
+        Debug.Log("Disconnected");
 
+        Mirror.NetworkManager.singleton.StopClient();
+
+        SceneManager.LoadScene("MainMenu");
         base.OnClientDisconnect(conn);
     }
 
