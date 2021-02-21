@@ -67,7 +67,12 @@ public class MyAuthenticator : NetworkAuthenticator
 
                 Debug.Log("Kicking player with steamid " + id + "  name: " + ((PlayerData)connection.Value.authenticationData).steamName);
 
-                ((NetworkConnection)connection.Value).Disconnect();
+
+                connection.Value.Send(msg);
+
+
+                StartCoroutine(DelayedDisconnect(connection.Value, 2f));
+
 
                 return;
             }
@@ -265,7 +270,7 @@ public class MyAuthenticator : NetworkAuthenticator
         // disconnect the client after 1 second so that response message gets delivered
         StartCoroutine(DelayedDisconnect(conn, 1));
 
-        Debug.Log("Rejected connection and responeded to client: " + ((PlayerData)conn.authenticationData).steamName + " - " + ((PlayerData)conn.authenticationData).id);
+        Debug.Log("Rejected connection and responded to client: " + ((PlayerData)conn.authenticationData).steamName + " - " + ((PlayerData)conn.authenticationData).id);
     }
 
 

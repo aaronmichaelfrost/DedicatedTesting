@@ -22,11 +22,11 @@ public class ServerData
     // Format:
 
     /*
-     * steamid steamName
-     * steamid steamName
-     * steamid steamName
-     * steamid steamName
-     * steamid steamName
+     * steamid 
+     * steamName
+     * steamid 
+     * steamName
+     * 
      */
 
     public static void Init()
@@ -82,12 +82,18 @@ public class ServerData
         /// <param name="data"></param>
         public static void AddPlayer(PlayerData data)
         {
+            Debug.Log("Removing duplicates player entries.");
+
             // Remove duplicate copies 
             RemovePlayer(data.id);
 
+            Debug.Log("Finished removing player from players file.");
+
             StreamWriter writer = new StreamWriter(playersPath, true);
 
-            writer.Write(data.id + " " + data.steamName + "\n");
+            writer.Write(data.id + "\n" + data.steamName + "\n");
+
+            Debug.Log("Finished writing new entry " + data.id + " " + data.steamName);
 
             writer.Close();
 
@@ -101,42 +107,63 @@ public class ServerData
         /// <returns></returns>
         public static void RemovePlayer(Steamworks.SteamId id)
         {
+
+            Debug.Log("Removing player");
+
             StreamReader reader = new StreamReader(playersPath);
+
+            Debug.Log("Opened reader");
 
             if (reader.EndOfStream)
             {
+                Debug.Log("File empty.");
+
                 reader.Close();
                 return;
             }
 
             string[] players = reader.ReadToEnd().Split('\n');
 
+            Debug.Log("Read file to end and split it");
+
             reader.Close();
 
             string updated = "";
 
-
-            if(players != null && players.Length > 0)
+            // Add all players to the updated string except for the player to remove
+            if (players != null && players.Length > 0)
             {
+                Debug.Log("There are " + (players.Length / 2) + " players on record.");
 
-                // Add all players to the updated string except for the player to remove
-                foreach (var playerString in players)
+                for (int i = 0; i < players.Length; i++)
                 {
-
-                    if(playerString.Length > 3)
+                    if(players[i].Length >= 1)
                     {
-                        string[] player = playerString.Split(' ');
+                        Debug.Log("Found a player on record " + players[i + 1]);
 
-                        if (player[0] != id.ToString())
-                            updated += player[0] + " " + player[1] + '\n';
+                        if (players[i] != id.ToString())
+                        {
+                            Debug.Log("Adding player to updated list: " + players[i + 1]);
+
+                            updated += players[i] + '\n' + players[i + 1] + '\n';
+                        }
+
+
+                        i++;
                     }
-
                 }
             }
+            else
+            {
+                Debug.Log("Players file was null or empty.");
+            }
+
+            Debug.Log("Now writing updated player file after player has been removed:");
+            Debug.Log(updated);
 
 
 
-
+            
 
             StreamWriter writer = new StreamWriter(playersPath, false);
 
@@ -166,15 +193,27 @@ public class ServerData
 
             string name = "";
 
-            foreach (var player in players)
+
+
+            // Add all players to the updated string except for the player to remove
+            if (players != null && players.Length > 0)
             {
-                string[] playerData = player.Split(' ');
+                for (int i = 0; i < players.Length; i++)
+                {
+                    if (players[i].Length >= 1)
+                    {
+                        if (players[i] == id.ToString())
+                        {
+                            name = players[i + 1];
+                            break;
+                        }
 
-                ulong playerId = System.Convert.ToUInt64(playerData[0]);
+                        i++;
 
-                if (playerId == id)
-                    name = playerData[1];
+                    }
+                }
             }
+
 
             reader.Close();
 
@@ -215,30 +254,27 @@ public class ServerData
             Steamworks.SteamId id = 0;
 
             Debug.Log("Finding ID associated with name.");
-            Debug.Log("There are " + (players.Length - 1).ToString() + " players on record:");
+            Debug.Log("There are " + (players.Length /2) + " players on record:");
 
-            
 
-            foreach (var player in players)
+            // Add all players to the updated string except for the player to remove
+            if (players != null && players.Length > 0)
             {
-                if(player.Length > 3)
+                for (int i = 0; i < players.Length; i++)
                 {
+                    if (players[i].Length >= 1)
+                    {
+                        if (players[i + 1] == name)
+                        {
+                            id = System.Convert.ToUInt64(players[i]);
+                            break;
+                        }
 
-                    Debug.Log(player);
+                        i++;
 
-                    Debug.Log("Splitting now: ");
-
-
-                    string[] playerData = player.Split(' ');
-
-                    Debug.Log(playerData[0] + " " + playerData[1]);
-
-                    if (playerData[1] == name)
-                        id = System.Convert.ToUInt64(playerData[0]);
+                    }
                 }
             }
-
-            
 
 
             if (id == 0)
@@ -272,18 +308,17 @@ public class ServerData
 
             reader.Close();
 
-            foreach (var player in players)
+
+            for (int i = 0; i < players.Length; i++)
             {
-                if (player.Length > 3)
+
+
+                if (players[i] == id.ToString())
                 {
-
-                    Debug.Log(player);
-
-                    string[] playerData = player.Split(' ');
-
-                    if (playerData[0] == id.ToString())
-                        return true;
+                    return true;
                 }
+
+                i++;
             }
 
             return false;

@@ -26,18 +26,18 @@ public class ClientConsole : MonoBehaviour
     public static ConsoleCommand HELP;
     public static ConsoleCommand<float> SET_FOV;
     public static ConsoleCommand<string> SERVER_DEBUG_MESSAGE;
-    public static ConsoleCommand<string> BAN_BY_NAME;
+    public static ConsoleCommand<List<string>> BAN_BY_NAME;
     public static ConsoleCommand<ulong> BAN_BY_ID;
     public static ConsoleCommand<ulong> MOD_BY_ID;
-    public static ConsoleCommand<string> MOD_BY_NAME;
+    public static ConsoleCommand<List<string>> MOD_BY_NAME;
 
-    public static ConsoleCommand<string> UNBAN_BY_NAME;
+    public static ConsoleCommand<List<string>> UNBAN_BY_NAME;
     public static ConsoleCommand<ulong> UNBAN_BY_ID;
     public static ConsoleCommand<ulong> UNMOD_BY_ID;
-    public static ConsoleCommand<string> UNMOD_BY_NAME;
+    public static ConsoleCommand<List<string>> UNMOD_BY_NAME;
 
     public static ConsoleCommand<ulong> KICK_BY_ID;
-    public static ConsoleCommand<string> KICK_BY_NAME;
+    public static ConsoleCommand<List<string>> KICK_BY_NAME;
 
 
     void Start()
@@ -106,12 +106,27 @@ public class ClientConsole : MonoBehaviour
 
         });
 
-        BAN_BY_NAME = new ConsoleCommand<string>("ban_name", "Bans the first found user with this steam name, be careful using this.", "ban_name <string>", (x) =>
+        BAN_BY_NAME = new ConsoleCommand<List<string>>("ban_name", "Bans the first found user with this steam name, be careful using this.", "ban_name <string>", (x) =>
         {
+
+            string name = "";
+
+
+            for (int i = 0; i < x.Count; i++)
+            {
+
+                name += x[i];
+
+                if (i < x.Count - 1)
+                    name += " ";
+
+            }
+
+
 
 #if UNITY_SERVER
 
-            ulong id = ServerData.Players.GetId(x);
+            ulong id = ServerData.Players.GetId(name);
 
             if (id != 0)
             {
@@ -147,12 +162,25 @@ public class ClientConsole : MonoBehaviour
 
         });
 
-        MOD_BY_NAME = new ConsoleCommand<string>("mod_name", "Adds a server moderator using the first found user with this steam name, be careful using this.", "mod_name <string>", (x) =>
+        MOD_BY_NAME = new ConsoleCommand<List<string>>("mod_name", "Adds a server moderator using the first found user with this steam name, be careful using this.", "mod_name <string>", (x) =>
         {
+
+            string name = "";
+
+
+            for (int i = 0; i < x.Count; i++)
+            {
+
+                name += x[i];
+
+                if (i < x.Count - 1)
+                    name += " ";
+
+            }
 
 #if UNITY_SERVER
 
-            ulong id = ServerData.Players.GetId(x);
+            ulong id = ServerData.Players.GetId(name);
 
             if (id != 0)
                 ServerData.Config.AddId(id, ServerData.modsPath);
@@ -182,12 +210,25 @@ public class ClientConsole : MonoBehaviour
 
         });
 
-        UNBAN_BY_NAME = new ConsoleCommand<string>("unban_name", "UnBans the first found user with this steam name, be careful using this.", "unban_name <string>", (x) =>
+        UNBAN_BY_NAME = new ConsoleCommand<List<string>>("unban_name", "UnBans the first found user with this steam name, be careful using this.", "unban_name <string>", (x) =>
         {
+
+            string name = "";
+
+
+            for (int i = 0; i < x.Count; i++)
+            {
+
+                name += x[i];
+
+                if (i < x.Count - 1)
+                    name += " ";
+
+            }
 
 #if UNITY_SERVER
 
-            ulong id = ServerData.Players.GetId(x);
+            ulong id = ServerData.Players.GetId(name);
 
             if (id != 0)
                 ServerData.Config.RemoveId(id, ServerData.bansPath);
@@ -217,12 +258,25 @@ public class ClientConsole : MonoBehaviour
 
         });
 
-        UNMOD_BY_NAME = new ConsoleCommand<string>("unmod_name", "Removes a server moderator using the first found user with this steam name, be careful using this.", "unmod_name <string>", (x) =>
+        UNMOD_BY_NAME = new ConsoleCommand<List<string>>("unmod_name", "Removes a server moderator using the first found user with this steam name, be careful using this.", "unmod_name <string>", (x) =>
         {
+
+            string name = "";
+
+
+            for (int i = 0; i < x.Count; i++)
+            {
+
+                name += x[i];
+
+                if (i < x.Count - 1)
+                    name += " ";
+
+            }
 
 #if UNITY_SERVER
 
-            ulong id = ServerData.Players.GetId(x);
+            ulong id = ServerData.Players.GetId(name);
 
             if (id != 0)
                 ServerData.Config.RemoveId(id, ServerData.modsPath);
@@ -256,11 +310,24 @@ public class ClientConsole : MonoBehaviour
         });
 
 
-        KICK_BY_NAME = new ConsoleCommand<string>("kick_name", "Kicks the player from the session", "kick <string>", (x) =>
+        KICK_BY_NAME = new ConsoleCommand<List<string>>("kick_name", "Kicks the player from the session", "kick <string>", (x) =>
         {
 
+            string name = "";
+
+
+            for (int i = 0; i < x.Count; i++)
+            {
+
+                name += x[i];
+
+                if (i < x.Count - 1)
+                    name += " ";
+
+            }
+
 #if UNITY_SERVER
-            ulong id = ServerData.Players.GetId(x);
+            ulong id = ServerData.Players.GetId(name);
 
             if(id != 0)
                 ((MyAuthenticator)Mirror.NetworkManager.singleton.authenticator).Kick(id);
@@ -457,6 +524,18 @@ public class ClientConsole : MonoBehaviour
                     float x;
                     if (float.TryParse(properties[1], out x))
                         (commandList[i] as ConsoleCommand<float>).Invoke(x);
+                }
+                else if (commandList[i] as ConsoleCommand<List<string>> != null)
+                {
+                    List<string> propertiesAfterCommandId = new List<string>();
+
+                    for (int j = 1; j < properties.Length; j++)
+                    {
+                        propertiesAfterCommandId.Add(properties[j]);
+                    }
+
+
+                    (commandList[i] as ConsoleCommand<List<string>>).Invoke(propertiesAfterCommandId);
                 }
 
                 else if (commandList[i] as ConsoleCommand<string> != null)
