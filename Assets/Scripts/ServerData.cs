@@ -32,14 +32,15 @@ public class ServerData
     public static void Init()
     {
 
+        string projectFolder = Path.Combine(Application.dataPath, "../");
 
         // Create config / data files if neccecary
 
-        playersPath = Application.dataPath + "\\" + playersPath;
+        playersPath = projectFolder  + playersPath;
 
-        modsPath = Application.dataPath + "\\" + modsPath;
+        modsPath = projectFolder +  modsPath;
 
-        bansPath = Application.dataPath + "\\" + bansPath;
+        bansPath = projectFolder +  bansPath;
 
 
         if (!File.Exists(playersPath))

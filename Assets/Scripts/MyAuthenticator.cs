@@ -247,20 +247,7 @@ public class MyAuthenticator : NetworkAuthenticator
         conn.isAuthenticated = true;
 
 
-        Debug.Log("Starting delayed connect coroutine");
-        StartCoroutine(DelayedConnect(conn, 2));
-
-        
-    }
-
-
-    private IEnumerator DelayedConnect(NetworkConnection conn, float waitTime)
-    {
-        yield return new WaitForSeconds(waitTime);
-
         ServerAccept(conn);
-
-        Debug.Log("Accepted connection to client: " + ((PlayerData)conn.authenticationData).steamName + " - " + ((PlayerData)conn.authenticationData).id);
     }
 
 
@@ -301,8 +288,6 @@ public class MyAuthenticator : NetworkAuthenticator
 
         AuthRequest authRequest = new AuthRequest
         {
-            
-
             ticket = Steamworks.SteamUser.GetAuthSessionTicket(),
 
             playerData = new PlayerData
@@ -310,14 +295,10 @@ public class MyAuthenticator : NetworkAuthenticator
                 steamName = Steamworks.SteamClient.Name,
                 id = Steamworks.SteamClient.SteamId,
             }
-
-            
         };
 
         localClientTicket = authRequest.ticket;
 
-
-      
 
         NetworkClient.Send(authRequest, 0);
 
