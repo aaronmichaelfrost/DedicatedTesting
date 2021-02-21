@@ -213,14 +213,21 @@ public class NetworkManagerCallbacks : NetworkManager
 
 
 
+
+        
         Debug.Log("Cancelling auth ticket.");
-        MyAuthenticator.localClientTicket.Cancel();
+        if (MyAuthenticator.localClientTicket != null)
+            MyAuthenticator.localClientTicket.Cancel();
         Debug.Log("Auth ticket cancelled.");
 
 
         Debug.Log("Ending auth session.");
         Steamworks.SteamUser.EndAuthSession(Steamworks.SteamClient.SteamId);
         Debug.Log("Auth session ended.");
+
+        conn.isAuthenticated = false;
+
+        
 
 
         SceneManager.LoadScene("MainMenu");

@@ -72,9 +72,6 @@ public class ServerData
 
     public static class Players
     {
-
-
-
         /// <summary>
         /// Appends a player entry to the players file. Used to associate player id with name in the players file
         /// Note: removes duplicate entries with duplicate ids
@@ -139,7 +136,6 @@ public class ServerData
                 {
                     if(players[i].Length >= 1)
                     {
-                        Debug.Log("Found a player on record " + players[i + 1]);
 
                         if (players[i] != id.ToString())
                         {

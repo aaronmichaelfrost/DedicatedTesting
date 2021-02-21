@@ -19,9 +19,11 @@ public class ServerListingUI : MonoBehaviour
     public void Connect()
     {
 
+        Debug.Log("Connecting to server " + server.Address.ToString());
+        Mirror.NetworkManager.singleton.networkAddress = server.Address.ToString();
         Mirror.NetworkManager.singleton.StartClient();
 
-        Mirror.NetworkManager.singleton.networkAddress = server.Address.ToString();
+        
 
     }
 
