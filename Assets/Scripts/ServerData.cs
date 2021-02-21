@@ -121,10 +121,15 @@ public class ServerData
                 // Add all players to the updated string except for the player to remove
                 foreach (var playerString in players)
                 {
-                    string[] player = playerString.Split(' ');
 
-                    if (player[0] != id.ToString())
-                        updated += player[0] + " " + player[1] + '\n';
+                    if(playerString.Length > 3)
+                    {
+                        string[] player = playerString.Split(' ');
+
+                        if (player[0] != id.ToString())
+                            updated += player[0] + " " + player[1] + '\n';
+                    }
+
                 }
             }
 

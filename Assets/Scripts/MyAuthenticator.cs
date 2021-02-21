@@ -5,6 +5,10 @@ using UnityEngine;
 
 public class MyAuthenticator : NetworkAuthenticator
 {
+
+    public static Steamworks.AuthTicket localClientTicket;
+
+
     /// <summary>
     /// I created this unit just because the steam OnValidateAuthResponse is how I hear back about if a steamid got accepted or rejected.
     /// 
@@ -29,8 +33,6 @@ public class MyAuthenticator : NetworkAuthenticator
     {
         public Steamworks.AuthTicket ticket;
         public PlayerData playerData;
-
-        
     }
 
 
@@ -43,8 +45,6 @@ public class MyAuthenticator : NetworkAuthenticator
 
         // This message you give the reason they could /  couldnt be authenticated
         public string message;
-
-        public Steamworks.AuthTicket ticket;
 
     }
 
@@ -64,23 +64,10 @@ public class MyAuthenticator : NetworkAuthenticator
         {
             if(((PlayerData)connection.Value.authenticationData).id == id)
             {
-                //msg.ticket = ((PlayerData)connection.Value.authenticationData).ticket;
 
+                Debug.Log("Kicking player with steamid " + id + "  name: " + ((PlayerData)connection.Value.authenticationData).steamName);
 
-
-                if(((PlayerData)connection.Value.authenticationData).ticket != null)
-                {
-                    // Cancel the ticket
-                    ((PlayerData)connection.Value.authenticationData).ticket.Cancel();
-                }
-                else
-                {
-                    Debug.Log("Auth ticket is null. Cannot cancel it.");
-                }
-
-
-                // disconnect the client after 1 second so that response message gets delivered
-                connection.Value.Disconnect();
+                ((NetworkConnection)connection.Value).Disconnect();
 
                 return;
             }
@@ -93,6 +80,9 @@ public class MyAuthenticator : NetworkAuthenticator
     private void ClientAuthMessageHandler(NetworkConnection connection, AuthRequest authMessage)
     {
         Debug.Log("Client wants to be authenticated: " + authMessage.playerData.steamName + " - " + authMessage.playerData.id);
+
+
+        
 
 
         Debug.Log("Checking for server ban from the path " + ServerData.bansPath);
@@ -109,7 +99,7 @@ public class MyAuthenticator : NetworkAuthenticator
             {
                 message = "Server banned!",
                 accepted = false,
-                ticket = authMessage.ticket
+
             };
 
             FailAuthentication(connection, response);
@@ -117,6 +107,8 @@ public class MyAuthenticator : NetworkAuthenticator
         else
         {
             Debug.Log("They aren't server banned.");
+
+
 
             Debug.Log("Authenticating with steam...");
 
@@ -128,12 +120,15 @@ public class MyAuthenticator : NetworkAuthenticator
                 playerData = authMessage.playerData
             };
 
-            
+
+            if (!Steamworks.SteamServer.BeginAuthSession(authMessage.ticket.Data, authMessage.playerData.id))
+            {
+                Debug.Log("BeginAuthSession returned false, called bullshit without even having to check with Gabe");
+
+                return;
+            }
 
             currentAuthUnits.Add(u);
-
-            // Ask steam to validate the user
-            Steamworks.SteamServer.BeginAuthSession(authMessage.ticket.Data, authMessage.playerData.id);
         }
     }
 
@@ -243,13 +238,29 @@ public class MyAuthenticator : NetworkAuthenticator
 
     private void ApproveAuthentication(NetworkConnection conn, AuthResponse response)
     {
-        Debug.Log("Authentication approved. Sending result to client.");
+        Debug.Log("Authentication approved. Sending response to client: [Accepted: " + response.accepted + "  Message: " + response.message + "]");
 
         conn.Send(response, 0);
 
+        Debug.Log("Result sent to client.");
+
         conn.isAuthenticated = true;
 
+
+        Debug.Log("Starting delayed connect coroutine");
+        StartCoroutine(DelayedConnect(conn, 2));
+
+        
+    }
+
+
+    private IEnumerator DelayedConnect(NetworkConnection conn, float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+
         ServerAccept(conn);
+
+        Debug.Log("Accepted connection to client: " + ((PlayerData)conn.authenticationData).steamName + " - " + ((PlayerData)conn.authenticationData).id);
     }
 
 
@@ -266,6 +277,8 @@ public class MyAuthenticator : NetworkAuthenticator
 
         // disconnect the client after 1 second so that response message gets delivered
         StartCoroutine(DelayedDisconnect(conn, 1));
+
+        Debug.Log("Rejected connection and responeded to client: " + ((PlayerData)conn.authenticationData).steamName + " - " + ((PlayerData)conn.authenticationData).id);
     }
 
 
@@ -284,8 +297,12 @@ public class MyAuthenticator : NetworkAuthenticator
 
         Debug.Log("Sending auth request to server.");
 
+        
+
         AuthRequest authRequest = new AuthRequest
         {
+            
+
             ticket = Steamworks.SteamUser.GetAuthSessionTicket(),
 
             playerData = new PlayerData
@@ -297,16 +314,21 @@ public class MyAuthenticator : NetworkAuthenticator
             
         };
 
-        authRequest.playerData.ticket = authRequest.ticket;
+        localClientTicket = authRequest.ticket;
+
 
       
 
         NetworkClient.Send(authRequest, 0);
+
+        Debug.Log("Sent auth request to server.");
     }
 
 
     public override void OnStartClient()
     {
+        Debug.Log("Registered handler for auth responses.");
+
         NetworkClient.RegisterHandler<AuthResponse>(ClientAuthResponseHandler, false);
 
         base.OnStartClient();
@@ -324,6 +346,8 @@ public class MyAuthenticator : NetworkAuthenticator
 
     public override void OnStopClient()
     {
+        Debug.Log("Unregistered handler for auth responses.");
+
         NetworkClient.UnregisterHandler<AuthResponse>();
 
         base.OnStopClient();
@@ -332,6 +356,8 @@ public class MyAuthenticator : NetworkAuthenticator
     public override void OnStopServer()
     {
         NetworkServer.UnregisterHandler<AuthRequest>();
+
+        Steamworks.SteamServer.OnValidateAuthTicketResponse -= OnValidateAuthTicketResponse;
 
         base.OnStopServer();
     }
@@ -349,8 +375,6 @@ public struct PlayerData
 {
     public Steamworks.SteamId id;
     public string steamName;
-
-    public Steamworks.AuthTicket ticket;
 
     // Other stuff like character selection etc
 }

@@ -170,9 +170,11 @@ public class NetworkManagerCallbacks : NetworkManager
 
         PlayerData p = (PlayerData)conn.authenticationData;
 
+
+        Debug.Log(p.steamName + " has left the game, ending steam session now.");
         Steamworks.SteamServer.EndSession(p.id);
 
-        Debug.Log(p.steamName + " has left the game.");
+        
 
         base.OnServerDisconnect(conn);
     }
@@ -209,9 +211,21 @@ public class NetworkManagerCallbacks : NetworkManager
     {
         Debug.Log("Disconnected");
 
-        Mirror.NetworkManager.singleton.StopClient();
+
+
+        Debug.Log("Cancelling auth ticket.");
+        MyAuthenticator.localClientTicket.Cancel();
+        Debug.Log("Auth ticket cancelled.");
+
+
+        Debug.Log("Ending auth session.");
+        Steamworks.SteamUser.EndAuthSession(Steamworks.SteamClient.SteamId);
+        Debug.Log("Auth session ended.");
+
 
         SceneManager.LoadScene("MainMenu");
+
+
         base.OnClientDisconnect(conn);
     }
 

@@ -240,6 +240,8 @@ public class SteamManager : MonoBehaviour
             Application.Quit();
 #endif
 
+        SteamUser.OnClientGameServerDeny += Mirror.NetworkClient.Disconnect;
+
 
         // Initialize steam client
         try
