@@ -9,6 +9,7 @@ namespace Mirror.FizzySteam
     [HelpURL("https://github.com/Chykary/FizzyFacepunch")]
     public class FizzyFacepunch : Transport
     {
+
         private const string STEAM_SCHEME = "steam";
 
         private Client client;
@@ -123,7 +124,7 @@ namespace Mirror.FizzySteam
             if (!SteamClient.IsValid)
             {
                 Debug.LogError("SteamWorks not initialized. Server could not be started.");
-                return;
+                //return;
             }
 
             FetchSteamID();

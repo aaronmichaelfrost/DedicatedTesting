@@ -176,8 +176,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2097491645}
   - component: {fileID: 2097491644}
-  - component: {fileID: 2097491643}
   - component: {fileID: 2097491646}
+  - component: {fileID: 2097491647}
   m_Layer: 0
   m_Name: Mirror
   m_TagString: Untagged
@@ -185,28 +185,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2097491643
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2097491642}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b0fecffa3f624585964b0d0eb21b18e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Port: 7777
-  NoDelay: 1
-  Interval: 10
-  FastResend: 2
-  CongestionWindow: 0
-  SendWindowSize: 4096
-  ReceiveWindowSize: 4096
-  debugLog: 0
-  statisticsGUI: 0
-  statisticsLog: 0
 --- !u!114 &2097491644
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -228,7 +206,7 @@ MonoBehaviour:
   serverBatchInterval: 0
   offlineScene: 
   onlineScene: 
-  transport: {fileID: 2097491643}
+  transport: {fileID: 2097491647}
   networkAddress: localhost
   maxConnections: 4
   disconnectInactiveConnections: 1
@@ -270,3 +248,20 @@ MonoBehaviour:
   OnClientAuthenticated:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &2097491647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2097491642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61b93ff779f4ef84da855aef42076949, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Channels: 00000000010000000200000003000000
+  Timeout: 25
+  SteamAppID: 1551700
+  AllowSteamRelay: 1
+  SteamUserID: 0

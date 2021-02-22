@@ -20,7 +20,9 @@ public class ServerListingUI : MonoBehaviour
     {
 
         Debug.Log("Connecting to server " + server.Address.ToString());
-        Mirror.NetworkManager.singleton.networkAddress = server.Address.ToString();
+
+        Mirror.NetworkManager.singleton.networkAddress = server.SteamId.ToString();
+        //Mirror.NetworkManager.singleton.networkAddress = server.Address.ToString();
         Mirror.NetworkManager.singleton.StartClient();
 
         
