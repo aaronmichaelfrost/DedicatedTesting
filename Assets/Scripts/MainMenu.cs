@@ -26,7 +26,16 @@ public class MainMenu : MonoBehaviour
 
     private void Start()
     {
-        RefreshServerList();
+        Refresh();
+    }
+
+
+    public void Refresh()
+    {
+        ServerListingUI.Clear();
+
+        AddLobbies();
+        AddServers();
     }
 
 
@@ -34,16 +43,26 @@ public class MainMenu : MonoBehaviour
     /// <summary>
     /// Refreshes the list of servers. This is usually connected to a button.
     /// </summary>
-    public async void RefreshServerList()
+    private async void AddServers()
     {
-
-
         var responsive = await SteamManager.singleton.ResponsiveServers();
 
-        ServerListingUI.Clear();
+        if(responsive != null)
+            foreach (var server in responsive)
+                ServerListingUI.CreateServerListing(server);
+    }
 
-        foreach (var server in responsive)
-            ServerListingUI.CreateListing(server);
+
+
+    /// <summary>
+    /// Refreshes the list of lobbies. This is usually connected to a button.
+    /// </summary>
+    private async void AddLobbies()
+    {
+        var responsive = await SteamManager.singleton.ResponsiveLobbies();
+
+        foreach (var lobby in responsive)
+            ServerListingUI.CreateLobbyListing(lobby);
     }
 }
 #endif

@@ -125,15 +125,48 @@ public class MyAuthenticator : NetworkAuthenticator
                 playerData = authMessage.playerData
             };
 
+            Debug.Log("Created authUnit");
 
-            if (!Steamworks.SteamServer.BeginAuthSession(authMessage.ticket.Data, authMessage.playerData.id))
+
+            Debug.Assert(authMessage.ticket.Data != null);
+
+            Debug.Assert(authMessage.playerData.id != 0);
+
+
+            if (Steamworks.SteamServer.IsValid)
             {
-                Debug.Log("BeginAuthSession returned false, called bullshit without even having to check with Gabe");
+                if (!Steamworks.SteamServer.BeginAuthSession(authMessage.ticket.Data, authMessage.playerData.id))
+                {
+                    Debug.Log("BeginAuthSession returned false, called bullshit without even having to check with Gabe");
 
-                return;
+                    return;
+                }
+                else
+                {
+                    Debug.Log("Beginning authentication session.");
+
+                    currentAuthUnits.Add(u);
+                }
+            }
+            else
+            {
+                if (Steamworks.SteamUser.BeginAuthSession(authMessage.ticket.Data, authMessage.playerData.id) != Steamworks.BeginAuthResult.OK)
+                {
+                    Debug.Log("BeginAuthSession returned false, called bullshit without even having to check with Gabe");
+
+                    return;
+                }
+                else
+                {
+                    Debug.Log("Beginning authentication session.");
+
+                    currentAuthUnits.Add(u);
+                }
             }
 
-            currentAuthUnits.Add(u);
+
+
+
         }
     }
 
@@ -141,7 +174,7 @@ public class MyAuthenticator : NetworkAuthenticator
     // This gets called on client when they recieve authentication reponse from server
     private void ClientAuthResponseHandler(NetworkConnection conn, AuthResponse authResponse)
     {
-        Debug.Log("Accepted: " + authResponse.accepted + ", Message: " + authResponse.message);
+        Debug.Log("[Client] Auth Response recieved: Accepted: " + authResponse.accepted + ", Message: " + authResponse.message);
 
 
         if (authResponse.accepted)
@@ -162,7 +195,7 @@ public class MyAuthenticator : NetworkAuthenticator
         string message = "";
         bool accepted = false;
 
-        Debug.Log("Validation response recieved: ");
+        Debug.Log("[Server/Host] Validation response recieved: ");
 
         switch (response)
         {
@@ -210,7 +243,10 @@ public class MyAuthenticator : NetworkAuthenticator
                 break;
         }
 
-        Debug.Log("Accepted: " + accepted + ", Message: " + message);
+        if (NetworkServer.active && !accepted)
+            return;
+
+        Debug.Log("[Server] Accepted: " + accepted + ", Message: " + message);
 
 
         AuthResponse msg = new AuthResponse
@@ -241,25 +277,30 @@ public class MyAuthenticator : NetworkAuthenticator
     }
 
 
+
+
+
     private void ApproveAuthentication(NetworkConnection conn, AuthResponse response)
     {
-        Debug.Log("Authentication approved. Sending response to client: [Accepted: " + response.accepted + "  Message: " + response.message + "]");
+        Debug.Log("[Server] Authentication approved. Sending response to client: [Accepted: " + response.accepted + "  Message: " + response.message + "]");
 
         conn.Send(response, 0);
 
-        Debug.Log("Result sent to client.");
+        Debug.Log("[Server] Result sent to client.");
 
         conn.isAuthenticated = true;
 
 
+
         ServerAccept(conn);
+
     }
 
 
 
     private void FailAuthentication(NetworkConnection conn, AuthResponse response)
     {
-        Debug.Log("Authentication failed. Sending result to client.");
+        Debug.Log("[Server] Authentication failed. Sending result to client.");
 
 
         conn.Send(response, 0);
@@ -270,7 +311,7 @@ public class MyAuthenticator : NetworkAuthenticator
         // disconnect the client after 1 second so that response message gets delivered
         StartCoroutine(DelayedDisconnect(conn, 1));
 
-        Debug.Log("Rejected connection and responded to client: " + ((PlayerData)conn.authenticationData).steamName + " - " + ((PlayerData)conn.authenticationData).id);
+        Debug.Log("[Server] Rejected connection and responded to client: " + ((PlayerData)conn.authenticationData).steamName + " - " + ((PlayerData)conn.authenticationData).id);
     }
 
 
@@ -287,9 +328,7 @@ public class MyAuthenticator : NetworkAuthenticator
     public override void OnClientAuthenticate(NetworkConnection conn)
     {
 
-        Debug.Log("Sending auth request to server.");
-
-        
+        Debug.Log("[Client] ON CLIENT AUTHENTICATE CALLED");
 
         AuthRequest authRequest = new AuthRequest
         {
@@ -307,7 +346,6 @@ public class MyAuthenticator : NetworkAuthenticator
 
         NetworkClient.Send(authRequest, 0);
 
-        Debug.Log("Sent auth request to server.");
     }
 
 
@@ -325,7 +363,11 @@ public class MyAuthenticator : NetworkAuthenticator
     {
         NetworkServer.RegisterHandler<AuthRequest>(ClientAuthMessageHandler, false);
 
-        Steamworks.SteamServer.OnValidateAuthTicketResponse += OnValidateAuthTicketResponse;
+
+        if(Steamworks.SteamServer.IsValid)
+            Steamworks.SteamServer.OnValidateAuthTicketResponse += OnValidateAuthTicketResponse;
+        else
+            Steamworks.SteamUser.OnValidateAuthTicketResponse += OnValidateAuthTicketResponse;
 
         base.OnStartServer();
     }
@@ -343,7 +385,12 @@ public class MyAuthenticator : NetworkAuthenticator
     {
         NetworkServer.UnregisterHandler<AuthRequest>();
 
-        Steamworks.SteamServer.OnValidateAuthTicketResponse -= OnValidateAuthTicketResponse;
+
+        if (Steamworks.SteamServer.IsValid)
+            Steamworks.SteamServer.OnValidateAuthTicketResponse -= OnValidateAuthTicketResponse;
+        else
+            Steamworks.SteamUser.OnValidateAuthTicketResponse -= OnValidateAuthTicketResponse;
+
 
         base.OnStopServer();
     }

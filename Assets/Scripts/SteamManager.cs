@@ -25,7 +25,9 @@ public class SteamManager : MonoBehaviour
             Destroy(this.gameObject);
 
 
+
         Utilities.DontDestroyOnLoad(this.gameObject);
+
 
 
 #if UNITY_SERVER
@@ -35,6 +37,8 @@ public class SteamManager : MonoBehaviour
 #else
         StartClient();
 #endif
+
+
     }
 
 
@@ -81,10 +85,10 @@ public class SteamManager : MonoBehaviour
     string serverName = "Default Server Name";
     int maxPlayers = 100;
 
-    
-    private void CreateSteamServer()
-    {
 
+
+    private void LoadCommandLineArgs()
+    {
         // Define batchmode parameters here
 
         if (GetArg("-description") != null)
@@ -105,7 +109,36 @@ public class SteamManager : MonoBehaviour
 
         if (GetArg("-maxplayers") != null)
             maxPlayers = Mathf.Clamp(System.Convert.ToUInt16(GetArg("-maxplayers")), 0, 1000);
+    }
+    
 
+
+
+
+    private void StartDedicatedServer(){
+
+
+        SteamServer.OnSteamServersConnected += OnSteamServerConnected;
+
+
+        LoadCommandLineArgs();
+
+
+        // Initialize the steam server
+        CreateSteamServer();
+
+
+        SteamServer.LogOnAnonymous();
+
+
+
+        
+    }
+
+
+    
+    public void CreateSteamServer()
+    {
 
         SteamServerInit init = new SteamServerInit
         {
@@ -124,22 +157,6 @@ public class SteamManager : MonoBehaviour
         SteamServer.Init(1551700, init, true);
 
     }
-
-
-    private void StartDedicatedServer(){
-
-
-        SteamServer.OnSteamServersConnected += OnSteamServerConnected;
-        
-
-        // Initialize the steam server
-        CreateSteamServer();
-
-        SteamServer.LogOnAnonymous();
-
-        
-    }
-
 
     void OnSteamServerConnected()
     {
@@ -163,6 +180,7 @@ public class SteamManager : MonoBehaviour
         Mirror.NetworkManager.singleton.StartServer();
 
         Mirror.NetworkManager.singleton.ServerChangeScene("gameplay");
+
     }
 
 
@@ -188,16 +206,47 @@ public class SteamManager : MonoBehaviour
 
 
 
+
+
     #endregion
 
+#endif
 
-#else
 
 
+
+
+
+
+#if !UNITY_SERVER
     #region Client Logic
 
 
     bool initialized = false;
+
+    
+
+
+    /// <summary>
+    /// Returns a list of responsive lobbys when finished
+    /// </summary>
+    /// <returns></returns>
+    public async System.Threading.Tasks.Task<System.Collections.Generic.List<Steamworks.Data.Lobby>> ResponsiveLobbies()
+    {
+
+        Steamworks.Data.Lobby[] responsiveArray = await SteamMatchmaking.LobbyList.RequestAsync();
+
+        System.Collections.Generic.List<Steamworks.Data.Lobby> responsiveList = new System.Collections.Generic.List<Steamworks.Data.Lobby>();
+
+        if (responsiveArray != null)
+        {
+            foreach (var lobby in responsiveArray)
+                responsiveList.Add(lobby);
+        }
+
+
+        return responsiveList;
+    }
 
 
 
