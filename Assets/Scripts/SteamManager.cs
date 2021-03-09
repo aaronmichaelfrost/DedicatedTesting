@@ -6,14 +6,15 @@ using UnityEngine.SceneManagement;
 
 
 
-
+/// <summary>
+/// 
+/// Class for managing steam client and server. 
+/// 
+/// </summary>
 public class SteamManager : MonoBehaviour
 {
-    
-
 
     public static SteamManager singleton;
-
 
 
 
@@ -29,11 +30,15 @@ public class SteamManager : MonoBehaviour
         Utilities.DontDestroyOnLoad(this.gameObject);
 
 
+        // Initialize server files
+        ServerData.Init();
+
+
 
 #if UNITY_SERVER
-        
+      
         StartDedicatedServer();
-        ServerData.Init();
+
 #else
         StartClient();
 #endif
@@ -117,10 +122,10 @@ public class SteamManager : MonoBehaviour
 
     private void StartDedicatedServer(){
 
-
         SteamServer.OnSteamServersConnected += OnSteamServerConnected;
 
 
+        // Load server config params from the batch file execution
         LoadCommandLineArgs();
 
 
@@ -129,17 +134,12 @@ public class SteamManager : MonoBehaviour
 
 
         SteamServer.LogOnAnonymous();
-
-
-
-        
     }
 
 
     
     public void CreateSteamServer()
     {
-
         SteamServerInit init = new SteamServerInit
         {
             IpAddress = System.Net.IPAddress.Any,
@@ -205,9 +205,6 @@ public class SteamManager : MonoBehaviour
     }
 
 
-
-
-
     #endregion
 
 #endif
@@ -222,6 +219,7 @@ public class SteamManager : MonoBehaviour
     #region Client Logic
 
 
+#pragma warning disable 0414
     bool initialized = false;
 
     
@@ -315,12 +313,6 @@ public class SteamManager : MonoBehaviour
 
 
 
-
-
-
-
-
-
     private void OnDisable()
     {
 
@@ -344,4 +336,4 @@ public class SteamManager : MonoBehaviour
 
 #endif
 
-    }
+}

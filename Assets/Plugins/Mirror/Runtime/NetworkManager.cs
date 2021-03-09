@@ -1420,6 +1420,9 @@ namespace Mirror
         /// <param name="conn">Connection to the server.</param>
         public virtual void OnClientConnect(NetworkConnection conn)
         {
+            Debug.Log("On client connect called");
+
+
             // OnClientConnect by default calls AddPlayer but it should not do
             // that when we have online/offline scenes. so we need the
             // clientLoadedScene flag to prevent it.
@@ -1429,6 +1432,8 @@ namespace Mirror
                 if (!ClientScene.ready) ClientScene.Ready(conn);
                 if (autoCreatePlayer)
                 {
+                    Debug.Log("Auto creating player");
+
                     ClientScene.AddPlayer(conn);
                 }
             }
@@ -1475,14 +1480,14 @@ namespace Mirror
         public virtual void OnClientSceneChanged(NetworkConnection conn)
         {
             // always become ready.
-            if (!ClientScene.ready) ClientScene.Ready(conn);
+            //if (!ClientScene.ready) ClientScene.Ready(conn);
 
             // Only call AddPlayer for normal scene changes, not additive load/unload
-            if (clientSceneOperation == SceneOperation.Normal && autoCreatePlayer && ClientScene.localPlayer == null)
-            {
+            //if (clientSceneOperation == SceneOperation.Normal && autoCreatePlayer && ClientScene.localPlayer == null)
+            //{
                 // add player if existing one is null
-                ClientScene.AddPlayer(conn);
-            }
+                // ClientScene.AddPlayer(conn);
+            //}
         }
 
         #endregion

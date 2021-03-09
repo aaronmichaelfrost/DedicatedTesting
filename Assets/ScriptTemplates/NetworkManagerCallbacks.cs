@@ -134,10 +134,14 @@ public class NetworkManagerCallbacks : NetworkManager
     /// <param name="conn">Connection from client.</param>
     public override void OnServerConnect(NetworkConnection conn) {
 
-        Debug.Log(((PlayerData)conn.authenticationData).steamName + " has joined the game!");
+        Debug.Log("[Server] : " + ((PlayerData)conn.authenticationData).steamName + " has joined the game!");
+
+        
 
         ServerData.Players.AddPlayer((PlayerData)conn.authenticationData);
 
+
+        base.OnServerConnect(conn);
     }
 
     /// <summary>
@@ -171,10 +175,14 @@ public class NetworkManagerCallbacks : NetworkManager
         PlayerData p = (PlayerData)conn.authenticationData;
 
 
-        Debug.Log(p.steamName + " has left the game, ending steam session now.");
-        Steamworks.SteamServer.EndSession(p.id);
+        // Dedicated servers need to end the session when player disconnects
+        if (Steamworks.SteamServer.IsValid)
+        {
+            Debug.Log(p.steamName + " has left the game, ending steam session now.");
 
-        
+            Steamworks.SteamServer.EndSession(p.id);
+        }
+
 
         base.OnServerDisconnect(conn);
     }
@@ -212,14 +220,12 @@ public class NetworkManagerCallbacks : NetworkManager
         Debug.Log("Disconnected");
 
 
-
-
         
-        Debug.Log("Cancelling auth ticket.");
         if (MyAuthenticator.localClientTicket != null)
+        {
+            Debug.Log("Cancelling auth ticket.");
             MyAuthenticator.localClientTicket.Cancel();
-        Debug.Log("Auth ticket cancelled.");
-
+        }
 
         Debug.Log("Ending auth session.");
         Steamworks.SteamUser.EndAuthSession(Steamworks.SteamClient.SteamId);

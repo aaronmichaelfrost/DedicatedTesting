@@ -1,13 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class SteamLobby : MonoBehaviour
 {
 
     public static SteamLobby singleton;
 
-    public static Steamworks.Data.Lobby ourLobby;
+
+    // The lobby that we are hosting or are a member of
+    public static Steamworks.Data.Lobby myLobby;
 
     public string lobbyName;
 
@@ -19,9 +19,12 @@ public class SteamLobby : MonoBehaviour
         else
             Destroy(this.gameObject);
 
+        Utilities.DontDestroyOnLoad(this.gameObject);
+
 
         Steamworks.SteamMatchmaking.OnLobbyCreated += OnLobbyCreated;
         Steamworks.SteamMatchmaking.OnLobbyEntered += OnLobbyEntered;
+
 
     }
 
@@ -31,18 +34,42 @@ public class SteamLobby : MonoBehaviour
         Steamworks.SteamMatchmaking.OnLobbyCreated -= OnLobbyCreated;
         Steamworks.SteamMatchmaking.OnLobbyEntered -= OnLobbyEntered;
 
-        ourLobby.SetPrivate();
-        ourLobby.SetInvisible();
-        ourLobby.Leave();
+        myLobby.SetPrivate();
+        myLobby.SetInvisible();
+        myLobby.Leave();
     }
 
 
-    public void CreateLobby()
+    public static void CreateLobby()
     {
         Debug.Log("Creating lobby");
 
 
         Steamworks.SteamMatchmaking.CreateLobbyAsync(NetworkManagerCallbacks.singleton.maxConnections);
+    }
+
+
+
+    /// <summary>
+    /// Disconnects from lobby if you are a client. If you are a host this functions shuts down the server and disconnect all players
+    /// </summary>
+    public void LeaveLobby()
+    {
+
+        // If we are hosting, then shut down the lobby
+        if (Mirror.NetworkServer.active)
+        {
+
+            Debug.Log("Closing lobby");
+
+            myLobby.SetPrivate();
+            myLobby.SetInvisible();
+        }
+
+
+        Debug.Log("Leaving lobby");
+        if (myLobby.Data != null)
+            myLobby.Leave();
     }
 
 
@@ -54,39 +81,41 @@ public class SteamLobby : MonoBehaviour
 
         if (result == Steamworks.Result.OK) 
         {
-
-            ourLobby = lobby;
-
-            Debug.Log("Lobby successfully created.");
-
-
-            lobby.SetPublic();
-
-            Mirror.NetworkManager.singleton.ServerChangeScene("gameplay");
-
-
-            Mirror.NetworkManager.singleton.StartHost();
-
+            myLobby = lobby;
 
             lobby.SetData("id", Steamworks.SteamClient.SteamId.ToString());
 
             lobby.SetData("name", lobbyName);
+
+            lobby.SetPublic();
+
+
+            Debug.Log("Starting network host");
+
+
+            // Start host
+            NetworkManagerCallbacks.singleton.StartHost();
+
+
+            Mirror.NetworkManager.singleton.ServerChangeScene("gameplay");
 
         }
         else
         {
             Debug.Log("Unable to create lobby.");
         }
-
     }
 
 
     private void OnLobbyEntered(Steamworks.Data.Lobby lobby)
     {
+
         // Return if we are the host
         if (Mirror.NetworkServer.active)
             return;
 
+
+        myLobby = lobby;
 
         Debug.Log("We joined a lobby.");
 

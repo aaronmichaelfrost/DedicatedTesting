@@ -29,8 +29,17 @@ public class ServerData
      * 
      */
 
+
+
+    /// <summary>
+    /// Makes sure there are server configuration folders in the application root directory.
+    /// 
+    /// If there arent this function will create them.
+    /// </summary>
     public static void Init()
     {
+
+        Debug.Log("Initializing server files");
 
         string projectFolder = Path.Combine(Application.dataPath, "../");
 
@@ -79,7 +88,7 @@ public class ServerData
         /// <param name="data"></param>
         public static void AddPlayer(PlayerData data)
         {
-            Debug.Log("Removing duplicates player entries.");
+            //Debug.Log("Removing duplicates player entries.");
 
             // Remove duplicate copies 
             RemovePlayer(data.id);
@@ -105,23 +114,15 @@ public class ServerData
         public static void RemovePlayer(Steamworks.SteamId id)
         {
 
-            Debug.Log("Removing player");
-
             StreamReader reader = new StreamReader(playersPath);
-
-            Debug.Log("Opened reader");
 
             if (reader.EndOfStream)
             {
-                Debug.Log("File empty.");
-
                 reader.Close();
                 return;
             }
 
             string[] players = reader.ReadToEnd().Split('\n');
-
-            Debug.Log("Read file to end and split it");
 
             reader.Close();
 
@@ -130,7 +131,6 @@ public class ServerData
             // Add all players to the updated string except for the player to remove
             if (players != null && players.Length > 0)
             {
-                Debug.Log("There are " + (players.Length / 2) + " players on record.");
 
                 for (int i = 0; i < players.Length; i++)
                 {
@@ -139,7 +139,6 @@ public class ServerData
 
                         if (players[i] != id.ToString())
                         {
-                            Debug.Log("Adding player to updated list: " + players[i + 1]);
 
                             updated += players[i] + '\n' + players[i + 1] + '\n';
                         }
@@ -154,12 +153,6 @@ public class ServerData
                 Debug.Log("Players file was null or empty.");
             }
 
-            Debug.Log("Now writing updated player file after player has been removed:");
-            Debug.Log(updated);
-
-
-
-            
 
             StreamWriter writer = new StreamWriter(playersPath, false);
 

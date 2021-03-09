@@ -43,9 +43,11 @@ public class ServerListingUI : MonoBehaviour
             if (result == Steamworks.RoomEnter.Success)
                 Debug.Log("Success!");
 
+
             // Now wait for the SteamLobby.OnLobbyEntered Call back to trigger so we can connect to the server
         }
     }
+
 
 
     /// <summary>
@@ -54,13 +56,16 @@ public class ServerListingUI : MonoBehaviour
     /// <param name="server"></param>
     public static void CreateLobbyListing(Steamworks.Data.Lobby lobby)
     {
+        if(MainMenu.singleton.serverListingParent != null)
+        {
+            ServerListingUI s = Instantiate(MainMenu.singleton.serverListingPrefab, MainMenu.singleton.serverListingParent).GetComponent<ServerListingUI>();
 
-        ServerListingUI s = Instantiate(MainMenu.singleton.serverListingPrefab, MainMenu.singleton.serverListingParent).GetComponent<ServerListingUI>();
+            s.isDedicated = false;
 
-        s.isDedicated = false;
+            s.lobby = lobby;
+            s.InitLobby();
+        }
 
-        s.lobby = lobby;
-        s.InitLobby();
     }
 
 
@@ -70,13 +75,16 @@ public class ServerListingUI : MonoBehaviour
     /// <param name="server"></param>
     public static void CreateServerListing(Steamworks.Data.ServerInfo server)
     {
+        if (MainMenu.singleton.serverListingParent != null)
+        {
 
-        ServerListingUI s = Instantiate(MainMenu.singleton.serverListingPrefab, MainMenu.singleton.serverListingParent).GetComponent<ServerListingUI>();
+            ServerListingUI s = Instantiate(MainMenu.singleton.serverListingPrefab, MainMenu.singleton.serverListingParent).GetComponent<ServerListingUI>();
 
-        s.isDedicated = true;
+            s.isDedicated = true;
 
-        s.server = server;
-        s.InitServer();
+            s.server = server;
+            s.InitServer();
+        }
     }
 
 

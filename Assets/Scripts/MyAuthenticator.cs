@@ -39,7 +39,7 @@ public class MyAuthenticator : NetworkAuthenticator
     /// <summary>
     /// Server sends this to client after checking the data in the request
     /// </summary>
-    struct AuthResponse : NetworkMessage
+    public struct AuthResponse : NetworkMessage
     {
         public bool accepted;
 
@@ -264,7 +264,7 @@ public class MyAuthenticator : NetworkAuthenticator
             {
 
                 if (accepted)
-                    ApproveAuthentication(authUnit.connection,  msg);
+                    StartCoroutine(DelayAuthenticationApproval(2f, authUnit, msg));
                 else
                     FailAuthentication(authUnit.connection, msg);
 
@@ -278,6 +278,16 @@ public class MyAuthenticator : NetworkAuthenticator
 
 
 
+    private IEnumerator DelayAuthenticationApproval(float delayTime, AuthUnit authUnit, AuthResponse msg)
+    {
+
+        Debug.Log("Delaying authentication response");
+
+        yield return new WaitForSeconds(delayTime);
+
+        ApproveAuthentication(authUnit.connection, msg);
+    }
+
 
 
     private void ApproveAuthentication(NetworkConnection conn, AuthResponse response)
@@ -286,14 +296,12 @@ public class MyAuthenticator : NetworkAuthenticator
 
         conn.Send(response, 0);
 
-        Debug.Log("[Server] Result sent to client.");
+        Debug.Log("[Server] Result sent to client: " + conn.address);
 
         conn.isAuthenticated = true;
 
 
-
         ServerAccept(conn);
-
     }
 
 
