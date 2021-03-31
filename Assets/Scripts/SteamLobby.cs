@@ -87,6 +87,8 @@ public class SteamLobby : MonoBehaviour
 
             lobby.SetData("name", lobbyName);
 
+            lobby.SetData("pingLocation", Steamworks.SteamNetworkingUtils.LocalPingLocation.ToString());
+
             lobby.SetPublic();
 
 

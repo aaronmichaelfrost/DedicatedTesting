@@ -136,7 +136,6 @@ public class NetworkManagerCallbacks : NetworkManager
 
         Debug.Log("[Server] : " + ((PlayerData)conn.authenticationData).steamName + " has joined the game!");
 
-        
 
         ServerData.Players.AddPlayer((PlayerData)conn.authenticationData);
 
@@ -280,14 +279,14 @@ public class NetworkManagerCallbacks : NetworkManager
     /// <para>StartServer has multiple signatures, but they all cause this hook to be called.</para>
     /// </summary>
     public override void OnStartServer() {
-
+        NetworkServer.RegisterHandler<ClientConsole.ModeratorRequest>(ServerData.FulfillModeratorRequest, true);
     }
 
     /// <summary>
     /// This is invoked when the client is started.
     /// </summary>
     public override void OnStartClient() {
-        
+
     }
 
     /// <summary>
@@ -299,7 +298,7 @@ public class NetworkManagerCallbacks : NetworkManager
     /// This is called when a server is stopped - including when a host is stopped.
     /// </summary>
     public override void OnStopServer() {
-
+        NetworkServer.UnregisterHandler<ClientConsole.ModeratorRequest>();
     }
 
     /// <summary>

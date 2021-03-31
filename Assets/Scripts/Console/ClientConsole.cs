@@ -39,6 +39,23 @@ public class ClientConsole : MonoBehaviour
     public static ConsoleCommand<ulong> KICK_BY_ID;
     public static ConsoleCommand<List<string>> KICK_BY_NAME;
 
+    public enum ModeratorRequestType
+    {
+        kick,
+        ban,
+        mod,
+        unban,
+        unmod
+    }
+
+
+    public struct ModeratorRequest : Mirror.NetworkMessage
+    {
+        public string name;
+        public ulong id;
+        public ModeratorRequestType requestType;
+    }
+
 
     void Start()
     {
@@ -93,50 +110,25 @@ public class ClientConsole : MonoBehaviour
 
         BAN_BY_ID = new ConsoleCommand<ulong>("ban_id", "Bans the user with the given steam id", "ban_id <ulong>", (x) =>
         {
-
 #if UNITY_SERVER
-            ServerData.Config.AddId(x, ServerData.bansPath);
-            KICK_BY_ID.Invoke(x);
+            ServerActions.Ban(x);
 #else
+            Mirror.NetworkClient.Send(new ModeratorRequest { requestType = ModeratorRequestType.ban, name = "", id = x }, 0);
+
             // Ask server to ban this player
             Debug.Log("Asking server to ban player with id: " + x);
-
 #endif
-
-
         });
 
         BAN_BY_NAME = new ConsoleCommand<List<string>>("ban_name", "Bans the first found user with this steam name, be careful using this.", "ban_name <string>", (x) =>
         {
 
-            string name = "";
-
-
-            for (int i = 0; i < x.Count; i++)
-            {
-
-                name += x[i];
-
-                if (i < x.Count - 1)
-                    name += " ";
-
-            }
-
-
-
 #if UNITY_SERVER
 
-            ulong id = ServerData.Players.GetId(name);
-
-            if (id != 0)
-            {
-                ServerData.Config.AddId(id, ServerData.bansPath);
-                KICK_BY_ID.Invoke(id);
-            }
-                
-
-            
+            ServerActions.Ban(JoinWithSpaces(x));
 #else
+
+            Mirror.NetworkClient.Send(new ModeratorRequest { requestType = ModeratorRequestType.ban, name = name, id = 0 }, 0);
 
             // Ask server to ban this player
             Debug.Log("Asking server to ban player with name: " + x);
@@ -149,50 +141,28 @@ public class ClientConsole : MonoBehaviour
 
         MOD_BY_ID = new ConsoleCommand<ulong>("mod_id", "Adds a server moderator by steamid.", "mod_id <ulong>", (x) =>
         {
-
 #if UNITY_SERVER
-            ServerData.Config.AddId(x, ServerData.modsPath);
-
+            ServerActions.Mod(x);
 #else
+            Mirror.NetworkClient.Send(new ModeratorRequest { requestType = ModeratorRequestType.mod, name = "", id = x }, 0);
+
             // Ask server to ban this player
             Debug.Log("Asking server to mod player with id: " + x);
-
 #endif
-
-
         });
 
         MOD_BY_NAME = new ConsoleCommand<List<string>>("mod_name", "Adds a server moderator using the first found user with this steam name, be careful using this.", "mod_name <string>", (x) =>
         {
-
-            string name = "";
-
-
-            for (int i = 0; i < x.Count; i++)
-            {
-
-                name += x[i];
-
-                if (i < x.Count - 1)
-                    name += " ";
-
-            }
-
 #if UNITY_SERVER
 
-            ulong id = ServerData.Players.GetId(name);
+            ServerActions.Mod(JoinWithSpaces(x));
 
-            if (id != 0)
-                ServerData.Config.AddId(id, ServerData.modsPath);
 #else
-
+            Mirror.NetworkClient.Send(new ModeratorRequest { requestType = ModeratorRequestType.mod, name = JoinWithSpaces(x), id = 0 }, 0);
 
             // Ask server to mod this player
             Debug.Log("Asking server to mod player with name: " + x);
-
 #endif
-
-
         });
 
 
@@ -200,39 +170,25 @@ public class ClientConsole : MonoBehaviour
         {
 
 #if UNITY_SERVER
-            ServerData.Config.RemoveId(x, ServerData.bansPath);
+            ServerActions.UnBan(x);
 #else
+            Mirror.NetworkClient.Send(new ModeratorRequest { requestType = ModeratorRequestType.unban, name = "", id = x }, 0);
+
             // Ask server to ban this player
             Debug.Log("Asking server to unban player with id: " + x);
-
 #endif
-
-
         });
 
         UNBAN_BY_NAME = new ConsoleCommand<List<string>>("unban_name", "UnBans the first found user with this steam name, be careful using this.", "unban_name <string>", (x) =>
         {
 
-            string name = "";
-
-
-            for (int i = 0; i < x.Count; i++)
-            {
-
-                name += x[i];
-
-                if (i < x.Count - 1)
-                    name += " ";
-
-            }
-
 #if UNITY_SERVER
 
-            ulong id = ServerData.Players.GetId(name);
+            ServerActions.UnBan(JoinWithSpaces(x));
 
-            if (id != 0)
-                ServerData.Config.RemoveId(id, ServerData.bansPath);
 #else
+
+            Mirror.NetworkClient.Send(new ModeratorRequest { requestType = ModeratorRequestType.unban, name = name, id = 0 }, 0);
 
             // Ask server to ban this player
             Debug.Log("Asking server to unban player with name: " + x);
@@ -245,50 +201,29 @@ public class ClientConsole : MonoBehaviour
 
         UNMOD_BY_ID = new ConsoleCommand<ulong>("unmod_id", "Removes a server moderator by steamid.", "unmod_id <int>", (x) =>
         {
-
 #if UNITY_SERVER
-            ServerData.Config.RemoveId(x, ServerData.modsPath);
-
+            ServerActions.UnBan(x);
 #else
+            Mirror.NetworkClient.Send(new ModeratorRequest { requestType = ModeratorRequestType.unmod, name = "", id = x }, 0);
+
             // Ask server to ban this player
             Debug.Log("Asking server to unmod player with id: " + x);
-
 #endif
-
-
         });
 
         UNMOD_BY_NAME = new ConsoleCommand<List<string>>("unmod_name", "Removes a server moderator using the first found user with this steam name, be careful using this.", "unmod_name <string>", (x) =>
         {
 
-            string name = "";
-
-
-            for (int i = 0; i < x.Count; i++)
-            {
-
-                name += x[i];
-
-                if (i < x.Count - 1)
-                    name += " ";
-
-            }
-
 #if UNITY_SERVER
+            ServerActions.Unmod(JoinWithSpaces(x));
 
-            ulong id = ServerData.Players.GetId(name);
-
-            if (id != 0)
-                ServerData.Config.RemoveId(id, ServerData.modsPath);
 #else
-
+            Mirror.NetworkClient.Send(new ModeratorRequest { requestType = ModeratorRequestType.unmod, name = name, id = 0 }, 0);
 
             // Ask server to mod this player
             Debug.Log("Asking server to unmod player with name: " + x);
 
 #endif
-
-
         });
 
 
@@ -296,50 +231,30 @@ public class ClientConsole : MonoBehaviour
         {
 
 #if UNITY_SERVER
-            if(ServerData.Players.IdPresent(x))
-                ((MyAuthenticator)Mirror.NetworkManager.singleton.authenticator).Kick(x);
+            ServerActions.Kick(x);
 #else
 
+            Mirror.NetworkClient.Send(new ModeratorRequest { requestType = ModeratorRequestType.kick, name = "", id = x }, 0);
 
             // Ask server to ban this player
             Debug.Log("Asking server to kick player with id: " + x);
-
 #endif
-
-
         });
 
 
         KICK_BY_NAME = new ConsoleCommand<List<string>>("kick_name", "Kicks the player from the session", "kick <string>", (x) =>
         {
 
-            string name = "";
-
-
-            for (int i = 0; i < x.Count; i++)
-            {
-
-                name += x[i];
-
-                if (i < x.Count - 1)
-                    name += " ";
-
-            }
 
 #if UNITY_SERVER
-            ulong id = ServerData.Players.GetId(name);
-
-            if(id != 0)
-                ((MyAuthenticator)Mirror.NetworkManager.singleton.authenticator).Kick(id);
+            ServerActions.Kick(JoinWithSpaces(x));
 #else
 
+            Mirror.NetworkClient.Send(new ModeratorRequest { requestType = ModeratorRequestType.kick, name = name, id = 0 }, 0);
 
             // Ask server to ban this player
             Debug.Log("Asking server to kick player with id: " + x);
-
 #endif
-
-
         });
 
 
@@ -353,7 +268,22 @@ public class ClientConsole : MonoBehaviour
 
 
 
+        // Takes a list of strings and concatinates them into one string connected with spaces
+        string JoinWithSpaces(List<string> x)
+        {
+            string name = "";
 
+            for (int i = 0; i < x.Count; i++)
+            {
+
+                name += x[i];
+
+                if (i < x.Count - 1)
+                    name += " ";
+            }
+
+            return name;
+        }
 
 
 

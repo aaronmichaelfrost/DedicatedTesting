@@ -264,7 +264,7 @@ public class MyAuthenticator : NetworkAuthenticator
             {
 
                 if (accepted)
-                    StartCoroutine(DelayAuthenticationApproval(2f, authUnit, msg));
+                    StartCoroutine(DelayAuthenticationApproval(.5f, authUnit, msg));
                 else
                     FailAuthentication(authUnit.connection, msg);
 

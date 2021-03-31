@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿
+
+
+using UnityEngine;
 using System.IO;
 
 
@@ -316,7 +319,91 @@ public class ServerData
     }
 
 
-  
+    private static string RequestTypeToString(ClientConsole.ModeratorRequestType moderatorRequestType)
+    {
+        switch (moderatorRequestType)
+        {
+            case ClientConsole.ModeratorRequestType.kick:
+                return "kick";
+            case ClientConsole.ModeratorRequestType.ban:
+                return "ban";
+            case ClientConsole.ModeratorRequestType.mod:
+                return "mod";
+            case ClientConsole.ModeratorRequestType.unban:
+                return "unban";
+            case ClientConsole.ModeratorRequestType.unmod:
+                return "unmod";
+            default:
+                return "";
+        }
+    }
+
+
+    /// <summary>
+    /// This is the mirror network message handler for moderator requests. It just decides what server action to perform based on what type of request it recieves
+    /// </summary>
+    /// <param name="conn"></param>
+    /// <param name="request"></param>
+    public static void FulfillModeratorRequest(Mirror.NetworkConnection conn, ClientConsole.ModeratorRequest request)
+    {
+
+        // If server can verify that the connection that sent the request is a moderator, then perform their request
+        if (Config.IdPresent((((PlayerData)conn.authenticationData).id), modsPath))
+        {
+
+            Debug.Log("[Server] Recieved moderator request: " + ((PlayerData)conn.authenticationData).steamName + " requested to " + RequestTypeToString(request.requestType) + " " + request.id);
+
+            switch (request.requestType)
+            {
+
+                case ClientConsole.ModeratorRequestType.ban:
+
+                    if (request.id == 0)
+                        ServerActions.Ban(request.name);
+                    else
+                        ServerActions.Ban(request.id);
+
+                    break;
+                case ClientConsole.ModeratorRequestType.kick:
+
+                    if (request.id == 0)
+                        ServerActions.Kick(request.name);
+                    else
+                        ServerActions.Kick(request.id);
+
+                    break;
+                case ClientConsole.ModeratorRequestType.mod:
+
+                    if (request.id == 0)
+                        ServerActions.Mod(request.name);
+                    else
+                        ServerActions.Mod(request.id);
+
+                    break;
+                case ClientConsole.ModeratorRequestType.unban:
+
+                    if (request.id == 0)
+                        ServerActions.UnBan(request.name);
+                    else
+                        ServerActions.UnBan(request.id);
+
+                    break;
+                case ClientConsole.ModeratorRequestType.unmod:
+
+                    if (request.id == 0)
+                        ServerActions.Unmod(request.name);
+                    else
+                        ServerActions.Unmod(request.id);
+
+                    break;
+
+                default:
+                    break;
+            }
+
+        }
+    }
+
 
     public static class Config
     {
@@ -445,3 +532,4 @@ public class ServerData
 
     
 }
+
