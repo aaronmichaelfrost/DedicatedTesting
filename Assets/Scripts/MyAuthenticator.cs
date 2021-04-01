@@ -70,9 +70,17 @@ public class MyAuthenticator : NetworkAuthenticator
                 Debug.Log("Kicking player with steamid " + id + "  name: " + ((PlayerData)connection.Value.authenticationData).steamName);
 
 
+                // Dont kick us if we are the host
+                if (NetworkClient.active && ((PlayerData)connection.Value.authenticationData).id == Steamworks.SteamClient.SteamId)
+                {
+
+                    Debug.Log("Someone tried to kick us, but we are the host.");
+                    return;
+                }
+
                 connection.Value.Send(msg);
 
-                Mirror.NetworkServer.RemovePlayerForConnection(connection.Value, true);
+                NetworkServer.RemovePlayerForConnection(connection.Value, true);
 
                 StartCoroutine(DelayedDisconnect(connection.Value, 2f));
 

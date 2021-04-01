@@ -100,6 +100,13 @@ public class SteamLobby : MonoBehaviour
             Debug.Log("Starting network host");
 
 
+            // Shut down host before starting
+            //if(Mirror.NetworkClient.active)
+                //Mirror.NetworkManager.singleton.StopClient();
+
+            //if (Mirror.NetworkServer.active)
+                 //Mirror.NetworkManager.singleton.StopServer();
+
             // Start host
             NetworkManagerCallbacks.singleton.StartHost();
 

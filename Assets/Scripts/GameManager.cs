@@ -9,7 +9,11 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+#if UNITY_SERVER
+        // Debug this so the dedicated server knows we've entered the gameplay scene
         Debug.Log("Game Manager started");
+
+#endif
     }
 
 
@@ -17,13 +21,15 @@ public class GameManager : MonoBehaviour
     {
         SteamLobby.LeaveLobby();
 
+
+        // Cancel auth ticket
         if (MyAuthenticator.localClientTicket != null)
             MyAuthenticator.localClientTicket.Cancel();
 
         MyAuthenticator.localClientTicket = null;
 
 
-
+        // Shutdown network
         if (Mirror.NetworkServer.active)
         {
             Debug.Log("Stopping host");
@@ -41,20 +47,8 @@ public class GameManager : MonoBehaviour
 
         }
 
+
+        // Go to main menu
         SceneManager.LoadScene("MainMenu");
     }
-
-
-    private void OnDisable()
-    {
-
-        if(MyAuthenticator.localClientTicket != null)
-            MyAuthenticator.localClientTicket.Cancel();
-
-        SteamLobby.LeaveLobby();
-
-        if(Mirror.NetworkClient.active)
-            Mirror.NetworkClient.Shutdown();
-    }
-
 }
