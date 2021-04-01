@@ -32,6 +32,7 @@ public class ServerListingUI : MonoBehaviour
             // Connect to the dedicated server
 
             Mirror.NetworkManager.singleton.networkAddress = server.SteamId.ToString();
+
             Mirror.NetworkManager.singleton.StartClient();
         }
         else

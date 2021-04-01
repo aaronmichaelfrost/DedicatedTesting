@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("Stopping host");
 
-            NetworkManagerCallbacks.singleton.StopHost();
+            Mirror.NetworkManager.singleton.StopHost();
         }
 
         else
@@ -36,9 +36,11 @@ public class GameManager : MonoBehaviour
             Debug.Log("Disconnecting client");
 
             Mirror.NetworkClient.Disconnect();
+
+            Mirror.NetworkManager.singleton.StopClient();
+
         }
 
-        Mirror.NetworkClient.Shutdown();
         SceneManager.LoadScene("MainMenu");
     }
 
