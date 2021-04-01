@@ -89,6 +89,10 @@ public class SteamLobby : MonoBehaviour
 
             lobby.SetData("pingLocation", Steamworks.SteamNetworkingUtils.LocalPingLocation.ToString());
 
+
+            // Set ourselves as a moderator
+            ServerActions.Mod(Steamworks.SteamClient.SteamId);
+
             lobby.SetPublic();
 
 

@@ -230,6 +230,9 @@ public class ServerData
         /// <returns></returns>
         public static Steamworks.SteamId GetId(string name)
         {
+
+            Debug.Log("GetId() called on name: " + name);
+
             StreamReader reader = new StreamReader(playersPath);
 
             if (reader.EndOfStream)
@@ -249,21 +252,17 @@ public class ServerData
             Debug.Log("There are " + (players.Length /2) + " players on record:");
 
 
-            // Add all players to the updated string except for the player to remove
             if (players != null && players.Length > 0)
             {
                 for (int i = 0; i < players.Length; i++)
                 {
                     if (players[i].Length >= 1)
                     {
-                        if (players[i + 1] == name)
+                        if (players[i] == name)
                         {
                             id = System.Convert.ToUInt64(players[i]);
                             break;
                         }
-
-                        i++;
-
                     }
                 }
             }

@@ -39,4 +39,12 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("MainMenu");
     }
 
+
+    private void OnDisable()
+    {
+
+        if(MyAuthenticator.localClientTicket != null)
+            MyAuthenticator.localClientTicket.Cancel();
+    }
+
 }
