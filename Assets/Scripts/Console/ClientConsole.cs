@@ -128,10 +128,10 @@ public class ClientConsole : MonoBehaviour
             ServerActions.Ban(JoinWithSpaces(x));
 #else
 
-            Mirror.NetworkClient.Send(new ModeratorRequest { requestType = ModeratorRequestType.ban, name = name, id = 0 }, 0);
+            Mirror.NetworkClient.Send(new ModeratorRequest { requestType = ModeratorRequestType.ban, name = JoinWithSpaces(x), id = 0 }, 0);
 
             // Ask server to ban this player
-            Debug.Log("Asking server to ban player with name: " + x);
+            Debug.Log("Asking server to ban player with name: " + JoinWithSpaces(x));
 
 #endif
 
@@ -158,10 +158,11 @@ public class ClientConsole : MonoBehaviour
             ServerActions.Mod(JoinWithSpaces(x));
 
 #else
+
             Mirror.NetworkClient.Send(new ModeratorRequest { requestType = ModeratorRequestType.mod, name = JoinWithSpaces(x), id = 0 }, 0);
 
             // Ask server to mod this player
-            Debug.Log("Asking server to mod player with name: " + x);
+            Debug.Log("Asking server to mod player with name: " + JoinWithSpaces(x));
 #endif
         });
 
@@ -218,10 +219,10 @@ public class ClientConsole : MonoBehaviour
             ServerActions.Unmod(JoinWithSpaces(x));
 
 #else
-            Mirror.NetworkClient.Send(new ModeratorRequest { requestType = ModeratorRequestType.unmod, name = name, id = 0 }, 0);
+            Mirror.NetworkClient.Send(new ModeratorRequest { requestType = ModeratorRequestType.unmod, name = JoinWithSpaces(x), id = 0 }, 0);
 
             // Ask server to mod this player
-            Debug.Log("Asking server to unmod player with name: " + x);
+            Debug.Log("Asking server to unmod player with name: " + JoinWithSpaces(x));
 
 #endif
         });
@@ -250,10 +251,9 @@ public class ClientConsole : MonoBehaviour
             ServerActions.Kick(JoinWithSpaces(x));
 #else
 
-            Mirror.NetworkClient.Send(new ModeratorRequest { requestType = ModeratorRequestType.kick, name = name, id = 0 }, 0);
+            Mirror.NetworkClient.Send(new ModeratorRequest { requestType = ModeratorRequestType.kick, name = JoinWithSpaces(x), id = 0 }, 0);
 
-            // Ask server to ban this player
-            Debug.Log("Asking server to kick player with id: " + x);
+            Debug.Log("Asking server to kick player with name: " + JoinWithSpaces(x));
 #endif
         });
 
@@ -281,6 +281,8 @@ public class ClientConsole : MonoBehaviour
                 if (i < x.Count - 1)
                     name += " ";
             }
+
+            Debug.Log("JoinWithSpaces() returned: " + name);
 
             return name;
         }

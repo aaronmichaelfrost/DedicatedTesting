@@ -260,7 +260,8 @@ public class ServerData
                     {
                         if (players[i] == name)
                         {
-                            id = System.Convert.ToUInt64(players[i]);
+
+                            id = System.Convert.ToUInt64(players[i - 1]);
                             break;
                         }
                     }
@@ -350,7 +351,13 @@ public class ServerData
         if (Config.IdPresent((((PlayerData)conn.authenticationData).id), modsPath))
         {
 
-            Debug.Log("[Server] Recieved moderator request: " + ((PlayerData)conn.authenticationData).steamName + " requested to " + RequestTypeToString(request.requestType) + " " + request.id);
+            if(request.id == 0)
+                Debug.Log("[Server] Recieved moderator request: " + ((PlayerData)conn.authenticationData).steamName + " requested to " + RequestTypeToString(request.requestType) + " " + request.name);
+            else
+                Debug.Log("[Server] Recieved moderator request: " + ((PlayerData)conn.authenticationData).steamName + " requested to " + RequestTypeToString(request.requestType) + " " + request.id);
+
+
+            
 
             switch (request.requestType)
             {
