@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using UnityEngine.SceneManagement;
+
 public class MyAuthenticator : NetworkAuthenticator
 {
 
@@ -211,6 +213,8 @@ public class MyAuthenticator : NetworkAuthenticator
             ClientReject(conn);
 
             Mirror.NetworkClient.Disconnect();
+
+            SceneManager.LoadScene("MainMenu");
         }
     }
 
