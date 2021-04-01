@@ -72,8 +72,9 @@ public class MyAuthenticator : NetworkAuthenticator
 
                 connection.Value.Send(msg);
 
+                Mirror.NetworkServer.RemovePlayerForConnection(connection.Value, true);
 
-                StartCoroutine(DelayedDisconnect(connection.Value, 4f));
+                StartCoroutine(DelayedDisconnect(connection.Value, 2f));
 
 
                 return;
@@ -364,8 +365,11 @@ public class MyAuthenticator : NetworkAuthenticator
 
 
         // Reject the unsuccessful authentication
-        if(conn.identity != null && conn.identity.isClient)
+        if (conn.identity != null && conn.identity.isClient)
             ServerReject(conn);
+        else
+            Debug.Log("Delayed disconnect returned conn.identity was null and identity wasn't a client");
+
     }
 
 
