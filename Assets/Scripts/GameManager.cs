@@ -17,6 +17,8 @@ public class GameManager : MonoBehaviour
     {
         SteamLobby.singleton.LeaveLobby();
 
+        MyAuthenticator.localClientTicket.Cancel();
+
 
         
         if (Mirror.NetworkServer.active)

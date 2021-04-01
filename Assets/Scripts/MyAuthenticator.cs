@@ -154,6 +154,31 @@ public class MyAuthenticator : NetworkAuthenticator
                 {
                     Debug.Log("BeginAuthSession returned false, called bullshit without even having to check with Gabe");
 
+
+                    switch (Steamworks.SteamUser.BeginAuthSession(authMessage.ticket.Data, authMessage.playerData.id))
+                    {
+                        case Steamworks.BeginAuthResult.OK:
+                            Debug.Log("");
+                            break;
+                        case Steamworks.BeginAuthResult.InvalidTicket:
+                            Debug.Log("Invalid");
+                            break;
+                        case Steamworks.BeginAuthResult.DuplicateRequest:
+                            Debug.Log("Dup");
+                            break;
+                        case Steamworks.BeginAuthResult.InvalidVersion:
+                            Debug.Log("Invalid version");
+                            break;
+                        case Steamworks.BeginAuthResult.GameMismatch:
+                            Debug.Log("Game mismatch");
+                            break;
+                        case Steamworks.BeginAuthResult.ExpiredTicket:
+                            Debug.Log("expired ticket");
+                            break;
+                        default:
+                            break;
+                    }
+
                     return;
                 }
                 else
