@@ -71,7 +71,7 @@ public class MyAuthenticator : NetworkAuthenticator
                 connection.Value.Send(msg);
 
 
-                StartCoroutine(DelayedDisconnect(connection.Value, 2f));
+                StartCoroutine(DelayedDisconnect(connection.Value, 4f));
 
 
                 return;
@@ -209,6 +209,8 @@ public class MyAuthenticator : NetworkAuthenticator
         else
         {
             ClientReject(conn);
+
+            Mirror.NetworkClient.Disconnect();
         }
     }
 
@@ -352,8 +354,11 @@ public class MyAuthenticator : NetworkAuthenticator
     {
         yield return new WaitForSeconds(waitTime);
 
+
+
         // Reject the unsuccessful authentication
-        ServerReject(conn);
+        if(conn != null)
+            ServerReject(conn);
     }
 
 
