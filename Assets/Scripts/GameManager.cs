@@ -37,11 +37,9 @@ public class GameManager : MonoBehaviour
 
             Mirror.NetworkClient.Disconnect();
         }
-            
-
-        SceneManager.LoadScene("MainMenu");
 
         Mirror.NetworkClient.Shutdown();
+        SceneManager.LoadScene("MainMenu");
     }
 
 
@@ -52,6 +50,9 @@ public class GameManager : MonoBehaviour
             MyAuthenticator.localClientTicket.Cancel();
 
         SteamLobby.LeaveLobby();
+
+        if(Mirror.NetworkClient.active)
+            Mirror.NetworkClient.Shutdown();
     }
 
 }
