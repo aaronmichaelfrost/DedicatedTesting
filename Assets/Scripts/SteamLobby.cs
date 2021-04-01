@@ -53,7 +53,7 @@ public class SteamLobby : MonoBehaviour
     /// <summary>
     /// Disconnects from lobby if you are a client. If you are a host this functions shuts down the server and disconnect all players
     /// </summary>
-    public void LeaveLobby()
+    public static void LeaveLobby()
     {
 
         // If we are hosting, then shut down the lobby
@@ -70,6 +70,7 @@ public class SteamLobby : MonoBehaviour
         Debug.Log("Leaving lobby");
         if (myLobby.Data != null)
             myLobby.Leave();
+
     }
 
 
@@ -115,6 +116,9 @@ public class SteamLobby : MonoBehaviour
 
     private void OnLobbyEntered(Steamworks.Data.Lobby lobby)
     {
+
+
+
 
         // Return if we are the host
         if (Mirror.NetworkServer.active)

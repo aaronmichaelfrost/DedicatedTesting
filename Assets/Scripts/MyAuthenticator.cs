@@ -215,6 +215,9 @@ public class MyAuthenticator : NetworkAuthenticator
             Mirror.NetworkClient.Disconnect();
 
             SceneManager.LoadScene("MainMenu");
+
+
+            Mirror.NetworkClient.Shutdown();
         }
     }
 
@@ -361,7 +364,7 @@ public class MyAuthenticator : NetworkAuthenticator
 
 
         // Reject the unsuccessful authentication
-        if(conn != null)
+        if(conn.identity != null && conn.identity.isClient)
             ServerReject(conn);
     }
 

@@ -15,12 +15,15 @@ public class GameManager : MonoBehaviour
 
     public void LeaveServer()
     {
-        SteamLobby.singleton.LeaveLobby();
+        SteamLobby.LeaveLobby();
 
-        MyAuthenticator.localClientTicket.Cancel();
+        if (MyAuthenticator.localClientTicket != null)
+            MyAuthenticator.localClientTicket.Cancel();
+
+        MyAuthenticator.localClientTicket = null;
 
 
-        
+
         if (Mirror.NetworkServer.active)
         {
             Debug.Log("Stopping host");
@@ -37,6 +40,8 @@ public class GameManager : MonoBehaviour
             
 
         SceneManager.LoadScene("MainMenu");
+
+        Mirror.NetworkClient.Shutdown();
     }
 
 
@@ -45,6 +50,8 @@ public class GameManager : MonoBehaviour
 
         if(MyAuthenticator.localClientTicket != null)
             MyAuthenticator.localClientTicket.Cancel();
+
+        SteamLobby.LeaveLobby();
     }
 
 }
