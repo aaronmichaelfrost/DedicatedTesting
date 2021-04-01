@@ -33,7 +33,8 @@ public class ServerListingUI : MonoBehaviour
 
             Mirror.NetworkManager.singleton.networkAddress = server.SteamId.ToString();
 
-            Mirror.NetworkManager.singleton.StartClient();
+            if(!Mirror.NetworkManager.singleton.isNetworkActive)
+                Mirror.NetworkManager.singleton.StartClient();
         }
         else
         {

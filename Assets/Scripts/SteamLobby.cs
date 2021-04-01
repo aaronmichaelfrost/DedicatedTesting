@@ -134,6 +134,8 @@ public class SteamLobby : MonoBehaviour
 
         Mirror.NetworkManager.singleton.networkAddress = lobby.GetData("id");
 
-        Mirror.NetworkManager.singleton.StartClient();
+
+        if(!Mirror.NetworkManager.singleton.isNetworkActive)
+            Mirror.NetworkManager.singleton.StartClient();
     }
 }
