@@ -15,6 +15,15 @@ public class SimpleMove : Mirror.NetworkBehaviour
     public float tickRate = 1;
 
 
+    private Mirror.Experimental.NetworkLerpRigidbody mirrorRb;
+
+
+    [Mirror.SyncVar()]
+    private Vector3 targetPosition;
+
+    [Mirror.SyncVar()]
+    private Vector3 targetVelocity;
+
 
 
     private void Start()
@@ -23,9 +32,16 @@ public class SimpleMove : Mirror.NetworkBehaviour
 
 
         // Start corrections thread on the server
-        if (Mirror.NetworkServer.active)
+        if (Mirror.NetworkServer.active) 
             StartCoroutine(MakeCorrections());
+        else
+        {
+            mirrorRb = GetComponent<Mirror.Experimental.NetworkLerpRigidbody>();
 
+
+            rb.isKinematic = true;
+        }
+            
 
         
 
@@ -47,7 +63,9 @@ public class SimpleMove : Mirror.NetworkBehaviour
             Vector3 input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
 
             MoveServer(input);
-            MoveLocal(input);
+
+            if(!Mirror.NetworkServer.active)
+                MoveLocal(input);
         }
 
     }
@@ -83,8 +101,12 @@ public class SimpleMove : Mirror.NetworkBehaviour
 
         if(rb != null)
         {
-            rb.position = position;
-            rb.velocity = velocity;
+            //rb.position = position;
+            //rb.velocity = velocity;
+
+            targetVelocity = velocity;
+
+            targetPosition = position;
         }
 
     }
@@ -104,7 +126,15 @@ public class SimpleMove : Mirror.NetworkBehaviour
 
     private void MoveLocal(Vector3 input)
     {
+
         rb.velocity = input * speed;
+
+        rb.velocity = Vector3.Lerp(rb.velocity, targetVelocity, mirrorRb.lerpVelocityAmount);
+        rb.position = Vector3.Lerp(rb.position, targetPosition, mirrorRb.lerpPositionAmount);
+        // add velocity to position as position would have moved on server at that velocity
+
+
+        rb.position += rb.velocity * Time.fixedDeltaTime;
     }
 
 }
