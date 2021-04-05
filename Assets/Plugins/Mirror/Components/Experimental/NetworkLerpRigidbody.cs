@@ -34,7 +34,6 @@ namespace Mirror.Experimental
 
         bool ClientWithAuthority => clientAuthority && hasAuthority;
 
-        bool isLocalPlayer = false;
         
 
 
@@ -44,9 +43,6 @@ namespace Mirror.Experimental
             {
                 target = GetComponent<Rigidbody>();
             }
-
-            isLocalPlayer = GetComponent<NetworkIdentity>().isLocalPlayer;
-
 
         }
 

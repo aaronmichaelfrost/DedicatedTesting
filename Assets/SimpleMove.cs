@@ -24,6 +24,11 @@ public class SimpleMove : Mirror.NetworkBehaviour
         if (Mirror.NetworkServer.active)
             StartCoroutine(MakeCorrections());
 
+        if (!isLocalPlayer)
+        {
+            Destroy(this);
+        }
+
     }
 
 
