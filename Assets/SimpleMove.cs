@@ -60,11 +60,13 @@ public class SimpleMove : Mirror.NetworkBehaviour
     /// <returns></returns>
     private IEnumerator MakeCorrections()
     {
+
         for(; ; )
         {
             yield return new WaitForSeconds(Mathf.Pow(tickRate, -1));
 
-            CorrectPlayer(transform.position, rb.velocity);
+
+            CorrectPlayer(rb.position, rb.velocity);
         }
     }
 
@@ -78,8 +80,13 @@ public class SimpleMove : Mirror.NetworkBehaviour
     [Mirror.ClientRpc]
     private void CorrectPlayer(Vector3 position, Vector3 velocity)
     {
-        transform.position = position;
-        rb.velocity = velocity;
+
+        if(rb != null)
+        {
+            rb.position = position;
+            rb.velocity = velocity;
+        }
+
     }
 
 

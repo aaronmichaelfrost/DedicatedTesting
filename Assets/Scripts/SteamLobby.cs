@@ -49,7 +49,7 @@ public class SteamLobby : MonoBehaviour
 
         if (!lobbyOpen)
         {
-            Debug.Log("Creating lobby");
+            Debug.Log("Creating lobby.. awating response: ");
 
 
             Steamworks.SteamMatchmaking.CreateLobbyAsync(NetworkManagerCallbacks.singleton.maxConnections);
