@@ -30,9 +30,9 @@ namespace Mirror.Experimental
         /// Ignore value if is host or client with Authority
         /// </summary>
         /// <returns></returns>
-        //bool IgnoreSync => isServer || ClientWithAuthority;
+        bool IgnoreSync => isServer || ClientWithAuthority;
 
-        //bool ClientWithAuthority => clientAuthority && hasAuthority;
+        bool ClientWithAuthority => clientAuthority && hasAuthority;
 
         
 
@@ -52,10 +52,10 @@ namespace Mirror.Experimental
             {
                 SyncToClients();
             }
-            //else if (ClientWithAuthority)
-            //{
-                //SendToServer();
-            //}
+            else if (ClientWithAuthority)
+            {
+                SendToServer();
+            }
         }
 
         private void SyncToClients()
@@ -64,7 +64,7 @@ namespace Mirror.Experimental
             targetPosition = rb.position;
         }
 
-        /*
+        
 
         private void SendToServer()
         {
@@ -72,25 +72,25 @@ namespace Mirror.Experimental
             if (now > nextSyncTime)
             {
                 nextSyncTime = now + syncInterval;
-                CmdSendState(target.velocity, target.position);
+                CmdSendState(rb.velocity, rb.position);
             }
         }
 
         [Command]
         private void CmdSendState(Vector3 velocity, Vector3 position)
         {
-            target.velocity = velocity;
-            target.position = position;
+            rb.velocity = velocity;
+            rb.position = position;
             targetVelocity = velocity;
             targetPosition = position;
         }
 
-        */
+        
 
         void FixedUpdate()
         {
             // Dont update the players position if they are the local player
-            if (/*IgnoreSync*/isServer || isLocalPlayer) { return; }
+            if (IgnoreSync) { return; }
 
             
 
