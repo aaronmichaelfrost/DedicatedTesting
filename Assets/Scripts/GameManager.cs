@@ -35,6 +35,10 @@ public class GameManager : MonoBehaviour
             Debug.Log("Stopping host");
 
             Mirror.NetworkManager.singleton.StopHost();
+
+            Mirror.NetworkClient.Disconnect();
+
+            Mirror.NetworkManager.singleton.StopClient();
         }
 
         else

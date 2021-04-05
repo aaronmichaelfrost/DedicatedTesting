@@ -131,8 +131,8 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   target: {fileID: 3241959449434722978}
-  lerpVelocityAmount: 0.5
-  lerpPositionAmount: 0.5
+  lerpVelocityAmount: 0.08
+  lerpPositionAmount: 0.08
   clientAuthority: 0
 --- !u!54 &3241959449434722978
 Rigidbody:
@@ -148,7 +148,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 80
+  m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!114 &5717689046642906475
 MonoBehaviour:
@@ -165,4 +165,4 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   speed: 3
-  tickRate: 5.89
+  tickRate: 1
