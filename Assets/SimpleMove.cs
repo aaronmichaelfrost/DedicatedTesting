@@ -55,7 +55,7 @@ public class SimpleMove : Mirror.NetworkBehaviour
 
 
 
-    void Update()
+    void FixedUpdate()
     {
 
         if (isLocalPlayer)
@@ -84,7 +84,7 @@ public class SimpleMove : Mirror.NetworkBehaviour
             yield return new WaitForSeconds(Mathf.Pow(tickRate, -1));
 
 
-            CorrectPlayer(rb.position, rb.velocity);
+            CorrectPlayer(rb.position);
         }
     }
 
@@ -96,7 +96,7 @@ public class SimpleMove : Mirror.NetworkBehaviour
     /// <param name="position"></param>
     /// <param name="velocity"></param>
     [Mirror.ClientRpc]
-    private void CorrectPlayer(Vector3 position, Vector3 velocity)
+    private void CorrectPlayer(Vector3 position)
     {
 
         if(rb != null)
@@ -104,7 +104,6 @@ public class SimpleMove : Mirror.NetworkBehaviour
             //rb.position = position;
             //rb.velocity = velocity;
 
-            targetVelocity = velocity;
 
             targetPosition = position;
         }
@@ -126,15 +125,9 @@ public class SimpleMove : Mirror.NetworkBehaviour
 
     private void MoveLocal(Vector3 input)
     {
-
-        rb.velocity = input * speed;
-
-        rb.velocity = Vector3.Lerp(rb.velocity, targetVelocity, mirrorRb.lerpVelocityAmount);
         rb.position = Vector3.Lerp(rb.position, targetPosition, mirrorRb.lerpPositionAmount);
-        // add velocity to position as position would have moved on server at that velocity
 
-
-        rb.position += rb.velocity * Time.fixedDeltaTime;
+        rb.position += input * speed * Time.fixedDeltaTime;
     }
 
 }

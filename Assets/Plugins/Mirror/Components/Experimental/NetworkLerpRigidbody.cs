@@ -30,9 +30,9 @@ namespace Mirror.Experimental
         /// Ignore value if is host or client with Authority
         /// </summary>
         /// <returns></returns>
-        bool IgnoreSync => isServer || ClientWithAuthority;
+        //bool IgnoreSync => isServer || ClientWithAuthority;
 
-        bool ClientWithAuthority => clientAuthority && hasAuthority;
+        //bool ClientWithAuthority => clientAuthority && hasAuthority;
 
         
 
@@ -52,10 +52,10 @@ namespace Mirror.Experimental
             {
                 SyncToClients();
             }
-            else if (ClientWithAuthority)
-            {
+            //else if (ClientWithAuthority)
+            //{
                 //SendToServer();
-            }
+            //}
         }
 
         private void SyncToClients()
@@ -86,7 +86,7 @@ namespace Mirror.Experimental
         void FixedUpdate()
         {
             // Dont update the players position if they are the local player
-            if (IgnoreSync || isLocalPlayer) { return; }
+            if (/*IgnoreSync*/isServer || isLocalPlayer) { return; }
 
             
 
