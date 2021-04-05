@@ -19,7 +19,7 @@ public class SimpleMove : Mirror.NetworkBehaviour
 
 
         // Start corrections thread on the server
-        if (!Mirror.NetworkServer.active)
+        if (!isLocalPlayer)
             rb.isKinematic = true;
 
     }

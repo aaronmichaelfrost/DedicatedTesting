@@ -56,6 +56,17 @@ namespace Mirror.Experimental
             {
                 SendToServer();
             }
+
+
+            // Dont update the players position if they are the local player
+            if (IgnoreSync) { return; }
+
+
+
+            rb.velocity = Vector3.Lerp(rb.velocity, targetVelocity, lerpVelocityAmount);
+            rb.position = Vector3.Lerp(rb.position, targetPosition, lerpPositionAmount);
+            // add velocity to position as position would have moved on server at that velocity
+            targetPosition += rb.velocity * Time.deltaTime;
         }
 
         private void SyncToClients()
@@ -87,19 +98,6 @@ namespace Mirror.Experimental
 
         
 
-        void FixedUpdate()
-        {
-            // Dont update the players position if they are the local player
-            if (IgnoreSync) { return; }
 
-            
-
-            rb.velocity = Vector3.Lerp(rb.velocity, targetVelocity, lerpVelocityAmount);
-            rb.position = Vector3.Lerp(rb.position, targetPosition, lerpPositionAmount);
-            // add velocity to position as position would have moved on server at that velocity
-            targetPosition += rb.velocity * Time.fixedDeltaTime;
-
-            // TODO does this also need to sync acceleration so and update velocity?
-        }
     }
 }
