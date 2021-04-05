@@ -131,9 +131,11 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   target: {fileID: 3241959449434722978}
-  lerpVelocityAmount: 0.08
-  lerpPositionAmount: 0.08
+  lerpVelocityAmount: 1
+  lerpPositionAmount: 1
   clientAuthority: 0
+  targetVelocity: {x: 0, y: 0, z: 0}
+  targetPosition: {x: 0, y: 0, z: 0}
 --- !u!54 &3241959449434722978
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -165,4 +167,4 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   speed: 3
-  tickRate: 1
+  tickRate: 10

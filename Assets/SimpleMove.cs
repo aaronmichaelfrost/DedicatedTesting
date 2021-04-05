@@ -18,11 +18,12 @@ public class SimpleMove : Mirror.NetworkBehaviour
     private Mirror.Experimental.NetworkLerpRigidbody mirrorRb;
 
 
+    public float correctionLerpLocal = .5f;
+
+
     [Mirror.SyncVar()]
     private Vector3 targetPosition;
 
-    [Mirror.SyncVar()]
-    private Vector3 targetVelocity;
 
 
 
@@ -55,7 +56,7 @@ public class SimpleMove : Mirror.NetworkBehaviour
 
 
 
-    void FixedUpdate()
+    void Update()
     {
 
         if (isLocalPlayer)
@@ -84,7 +85,7 @@ public class SimpleMove : Mirror.NetworkBehaviour
             yield return new WaitForSeconds(Mathf.Pow(tickRate, -1));
 
 
-            CorrectPlayer(rb.position);
+            CorrectPlayer(transform.position);
         }
     }
 
@@ -121,13 +122,20 @@ public class SimpleMove : Mirror.NetworkBehaviour
         rb.velocity = input * speed;
     }
 
-
+    Vector3 pos;
 
     private void MoveLocal(Vector3 input)
     {
-        rb.position = Vector3.Lerp(rb.position, targetPosition, mirrorRb.lerpPositionAmount);
+        // Lerp pos to target position
+        pos = Vector3.Lerp(transform.position, targetPosition, correctionLerpLocal);
 
-        rb.position += input * speed * Time.fixedDeltaTime;
+
+
+        transform.position += input * speed * Time.fixedDeltaTime;
+
+
+        // Lerp position to pos
+        transform.position = Vector3.Lerp(transform.position, pos, correctionLerpLocal);
     }
 
 }

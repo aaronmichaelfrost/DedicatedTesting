@@ -8,7 +8,7 @@ namespace Mirror.Experimental
     public class NetworkLerpRigidbody : NetworkBehaviour
     {
         [Header("Settings")]
-        [SerializeField] internal Rigidbody target = null;
+        [SerializeField] internal Rigidbody rb = null;
         [Tooltip("How quickly current velocity approaches target velocity")]
         [SerializeField] public float lerpVelocityAmount = 0.5f;
         [Tooltip("How quickly current position approaches target position")]
@@ -39,9 +39,9 @@ namespace Mirror.Experimental
 
         void OnValidate()
         {
-            if (target == null)
+            if (rb == null)
             {
-                target = GetComponent<Rigidbody>();
+                rb = GetComponent<Rigidbody>();
             }
 
         }
@@ -60,9 +60,11 @@ namespace Mirror.Experimental
 
         private void SyncToClients()
         {
-            targetVelocity = target.velocity;
-            targetPosition = target.position;
+            targetVelocity = rb.velocity;
+            targetPosition = rb.position;
         }
+
+        /*
 
         private void SendToServer()
         {
@@ -83,6 +85,8 @@ namespace Mirror.Experimental
             targetPosition = position;
         }
 
+        */
+
         void FixedUpdate()
         {
             // Dont update the players position if they are the local player
@@ -90,10 +94,10 @@ namespace Mirror.Experimental
 
             
 
-            target.velocity = Vector3.Lerp(target.velocity, targetVelocity, lerpVelocityAmount);
-            target.position = Vector3.Lerp(target.position, targetPosition, lerpPositionAmount);
+            rb.velocity = Vector3.Lerp(rb.velocity, targetVelocity, lerpVelocityAmount);
+            rb.position = Vector3.Lerp(rb.position, targetPosition, lerpPositionAmount);
             // add velocity to position as position would have moved on server at that velocity
-            targetPosition += target.velocity * Time.fixedDeltaTime;
+            targetPosition += rb.velocity * Time.fixedDeltaTime;
 
             // TODO does this also need to sync acceleration so and update velocity?
         }
