@@ -1,5 +1,6 @@
 using UnityEngine;
 
+
 namespace Mirror.Experimental
 {
     [AddComponentMenu("Network/Experimental/NetworkLerpRigidbody")]
@@ -33,12 +34,20 @@ namespace Mirror.Experimental
 
         bool ClientWithAuthority => clientAuthority && hasAuthority;
 
+        bool isLocalPlayer = false;
+        
+
+
         void OnValidate()
         {
             if (target == null)
             {
                 target = GetComponent<Rigidbody>();
             }
+
+            isLocalPlayer = GetComponent<NetworkIdentity>().isLocalPlayer;
+
+
         }
 
         void Update()
@@ -49,7 +58,7 @@ namespace Mirror.Experimental
             }
             else if (ClientWithAuthority)
             {
-                SendToServer();
+                //SendToServer();
             }
         }
 
@@ -80,7 +89,10 @@ namespace Mirror.Experimental
 
         void FixedUpdate()
         {
-            if (IgnoreSync) { return; }
+            // Dont update the players position if they are the local player
+            if (IgnoreSync || isLocalPlayer) { return; }
+
+            
 
             target.velocity = Vector3.Lerp(target.velocity, targetVelocity, lerpVelocityAmount);
             target.position = Vector3.Lerp(target.position, targetPosition, lerpPositionAmount);

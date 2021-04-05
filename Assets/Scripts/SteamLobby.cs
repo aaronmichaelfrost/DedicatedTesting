@@ -12,6 +12,9 @@ public class SteamLobby : MonoBehaviour
     public string lobbyName;
 
 
+    public static bool lobbyOpen = false;
+
+
     private void Awake()
     {
         if (singleton == null)
@@ -42,10 +45,18 @@ public class SteamLobby : MonoBehaviour
 
     public static void CreateLobby()
     {
-        Debug.Log("Creating lobby");
 
 
-        Steamworks.SteamMatchmaking.CreateLobbyAsync(NetworkManagerCallbacks.singleton.maxConnections);
+        if (!lobbyOpen)
+        {
+            Debug.Log("Creating lobby");
+
+
+            Steamworks.SteamMatchmaking.CreateLobbyAsync(NetworkManagerCallbacks.singleton.maxConnections);
+
+            lobbyOpen = true;
+        }
+
     }
 
 
@@ -59,6 +70,8 @@ public class SteamLobby : MonoBehaviour
         // If we are hosting, then shut down the lobby
         if (Mirror.NetworkServer.active)
         {
+
+            lobbyOpen = false;
 
             Debug.Log("Closing lobby");
 

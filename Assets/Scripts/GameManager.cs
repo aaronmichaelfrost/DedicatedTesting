@@ -51,4 +51,17 @@ public class GameManager : MonoBehaviour
         // Go to main menu
         SceneManager.LoadScene("MainMenu");
     }
+
+
+    private void OnDisable()
+    {
+        SteamLobby.LeaveLobby();
+
+
+        // Cancel auth ticket
+        if (MyAuthenticator.localClientTicket != null)
+            MyAuthenticator.localClientTicket.Cancel();
+
+        MyAuthenticator.localClientTicket = null;
+    }
 }

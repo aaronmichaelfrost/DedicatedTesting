@@ -298,6 +298,8 @@ public class NetworkManagerCallbacks : NetworkManager
     /// This is called when a server is stopped - including when a host is stopped.
     /// </summary>
     public override void OnStopServer() {
+
+        SteamLobby.lobbyOpen = false;
         NetworkServer.UnregisterHandler<ClientConsole.ModeratorRequest>();
     }
 

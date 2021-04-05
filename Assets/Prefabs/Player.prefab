@@ -13,7 +13,9 @@ GameObject:
   - component: {fileID: 8385623796190329940}
   - component: {fileID: 4695711049466902830}
   - component: {fileID: -1020505539367693514}
-  - component: {fileID: 3381182095060523626}
+  - component: {fileID: -7613245652287749718}
+  - component: {fileID: 3241959449434722978}
+  - component: {fileID: 5717689046642906475}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -114,7 +116,7 @@ MonoBehaviour:
   serverOnly: 0
   m_AssetId: 
   hasSpawned: 0
---- !u!114 &3381182095060523626
+--- !u!114 &-7613245652287749718
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -123,12 +125,44 @@ MonoBehaviour:
   m_GameObject: {fileID: 807885625671965236}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
+  m_Script: {fileID: 11500000, guid: 7f032128052c95a46afb0ddd97d994cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
-  syncInterval: 0
-  clientAuthority: 1
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
+  syncInterval: 0.1
+  target: {fileID: 3241959449434722978}
+  lerpVelocityAmount: 0.5
+  lerpPositionAmount: 0.5
+  clientAuthority: 0
+--- !u!54 &3241959449434722978
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 807885625671965236}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 80
+  m_CollisionDetection: 0
+--- !u!114 &5717689046642906475
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 807885625671965236}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d7d37b22fe20c54b91442682001eb4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  speed: 3
+  tickRate: 5.89
