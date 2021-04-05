@@ -15,6 +15,8 @@ public class SimpleMove : Mirror.NetworkBehaviour
     public float tickRate = 1;
 
 
+
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -24,10 +26,8 @@ public class SimpleMove : Mirror.NetworkBehaviour
         if (Mirror.NetworkServer.active)
             StartCoroutine(MakeCorrections());
 
-        if (!isLocalPlayer)
-        {
-            Destroy(this);
-        }
+
+        
 
     }
 
@@ -41,12 +41,15 @@ public class SimpleMove : Mirror.NetworkBehaviour
 
     void Update()
     {
-        Vector3 input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
 
-        input *= speed;
+        if (isLocalPlayer)
+        {
+            Vector3 input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
 
-        MoveServer(input);
-        MoveLocal(input);
+            MoveServer(input);
+            MoveLocal(input);
+        }
+
     }
 
 
@@ -84,14 +87,17 @@ public class SimpleMove : Mirror.NetworkBehaviour
     [Mirror.Command]
     private void MoveServer(Vector3 input)
     {
-        rb.velocity = input;
+        // TODO Validate / normalize input first
+
+
+        rb.velocity = input * speed;
     }
 
 
 
     private void MoveLocal(Vector3 input)
     {
-        rb.velocity = input;
+        rb.velocity = input * speed;
     }
 
 }
