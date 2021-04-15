@@ -57,15 +57,5 @@ public class GameManager : MonoBehaviour
     }
 
 
-    private void OnDisable()
-    {
-        SteamLobby.LeaveLobby();
 
-
-        // Cancel auth ticket
-        if (MyAuthenticator.localClientTicket != null)
-            MyAuthenticator.localClientTicket.Cancel();
-
-        MyAuthenticator.localClientTicket = null;
-    }
 }

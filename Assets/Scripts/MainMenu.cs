@@ -51,8 +51,25 @@ public class MainMenu : MonoBehaviour
 
     private void Start()
     {
+        Debug.Log("Clearing network: ");
+
+
+
+        SteamLobby.LeaveLobby();
+
+
+        // Cancel auth ticket
+        if (MyAuthenticator.localClientTicket != null)
+            MyAuthenticator.localClientTicket.Cancel();
+
+        MyAuthenticator.localClientTicket = null;
+
+
+
+
         UpdateRoomDisplayText();
         Refresh();
+
     }
 
 
